@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Assistente Menu</title>
+  <title>Assistente Benso</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -17,16 +17,13 @@
       --user-bubble: #8b2a2a;
       --bot-bubble: #fff3e8;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(160deg, #ede0cf 0%, #f9f5f0 100%);
       display: flex; justify-content: center; align-items: center;
       min-height: 100vh; min-height: 100dvh;
     }
-
     .chat-wrapper {
       width: 100%; max-width: 440px;
       height: 92vh; height: 92dvh; max-height: 780px;
@@ -36,8 +33,6 @@
       box-shadow: 0 24px 64px rgba(139,42,42,0.13);
       display: flex; flex-direction: column; overflow: hidden;
     }
-
-    /* HEADER */
     .header {
       padding: 14px 16px;
       background: linear-gradient(135deg, var(--accent), #6e1f1f);
@@ -66,8 +61,6 @@
       font-size: 12px; cursor: pointer; white-space: nowrap;
       font-family: 'Inter', sans-serif;
     }
-
-    /* PRIVACY OVERLAY */
     .privacy-overlay {
       position: absolute; inset: 0; z-index: 100;
       background: rgba(15,10,5,0.7);
@@ -80,15 +73,9 @@
       border-top: 2px solid var(--border);
       display: flex; flex-direction: column; gap: 12px;
     }
-    .privacy-banner p {
-      font-size: 12px; color: var(--muted); line-height: 1.6;
-    }
-    .privacy-banner a {
-      color: var(--accent); text-decoration: underline; cursor: pointer;
-    }
-    .privacy-banner strong {
-      display: block; font-size: 14px; color: var(--text); margin-bottom: 2px;
-    }
+    .privacy-banner p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .privacy-banner a { color: var(--accent); text-decoration: underline; cursor: pointer; }
+    .privacy-banner strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
     .privacy-btn {
       padding: 12px; border-radius: 12px; border: none;
       background: var(--accent); color: white;
@@ -96,8 +83,6 @@
       font-family: 'Inter', sans-serif; width: 100%;
     }
     .privacy-btn:hover { background: var(--accent-hover); }
-
-    /* SCHERMATA LINGUA */
     .lang-screen {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -132,11 +117,8 @@
       font-family: 'Inter', sans-serif;
     }
     .lang-confirm-btn:hover { background: var(--accent-hover); }
-
-    /* CHAT */
     .chat-area { display: none; flex: 1; flex-direction: column; overflow: hidden; }
     .chat-area.active { display: flex; }
-
     .messages {
       flex: 1; overflow-y: auto; padding: 14px 12px;
       display: flex; flex-direction: column; gap: 10px;
@@ -144,7 +126,6 @@
     }
     .messages::-webkit-scrollbar { width: 4px; }
     .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
     .message {
       padding: 11px 15px; border-radius: 18px;
       max-width: 84%; font-size: 14px; line-height: 1.55;
@@ -165,8 +146,7 @@
       font-family: 'Playfair Display', serif;
     }
     .bot b { color: var(--accent); }
-
-    /* TYPING */
+    .bot a { color: var(--accent); text-decoration: underline; word-break: break-all; }
     .typing {
       display: none; align-items: center; gap: 5px;
       padding: 11px 15px; background: var(--bot-bubble);
@@ -181,11 +161,8 @@
       0%,60%,100% { transform: translateY(0); opacity: 0.4; }
       30%          { transform: translateY(-5px); opacity: 1; }
     }
-
-    /* BANNER ALLERGENI */
     .allergy-warning {
-      background: #fff8e1;
-      border: 1.5px solid #f0a500;
+      background: #fff8e1; border: 1.5px solid #f0a500;
       border-left: 5px solid #f0a500;
       border-radius: 14px; border-bottom-left-radius: 5px;
       padding: 12px 15px; font-size: 13px; line-height: 1.6;
@@ -193,19 +170,14 @@
       animation: fadeUp 0.2s ease; font-family: 'Inter', sans-serif;
     }
     .allergy-warning strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #a05c00; }
-
-    /* DISCLAIMER PREZZI */
     .info-disclaimer {
-      background: #f0f4ff;
-      border: 1.5px solid #a0b4e0;
+      background: #f0f4ff; border: 1.5px solid #a0b4e0;
       border-left: 5px solid #4a6fa5;
       border-radius: 14px; border-bottom-left-radius: 5px;
       padding: 10px 14px; font-size: 12px; line-height: 1.5;
       color: #2a3a5c; align-self: flex-start; max-width: 90%;
       animation: fadeUp 0.2s ease; font-family: 'Inter', sans-serif;
     }
-
-    /* QUICK BUTTONS */
     .quick-section {
       padding: 10px 12px 8px; background: var(--bg);
       border-top: 1px solid var(--border); flex-shrink: 0;
@@ -232,8 +204,6 @@
     .quick-btn.primary:hover, .quick-btn.primary:active {
       background: var(--accent-hover); color: white; border-color: var(--accent-hover);
     }
-
-    /* INPUT */
     .input-area {
       padding: 10px 12px 16px; background: var(--bg);
       border-top: 1px solid var(--border);
@@ -257,8 +227,6 @@
     .send-btn:hover { background: var(--accent-hover); }
     .send-btn:active { transform: scale(0.93); }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* MODAL PRIVACY POLICY */
     .modal-overlay {
       position: absolute; inset: 0; z-index: 200;
       background: rgba(15,10,5,0.75);
@@ -283,7 +251,6 @@
       cursor: pointer; font-family: 'Inter', sans-serif;
     }
     .modal-close:hover { background: var(--accent-hover); }
-
     @media (max-width: 480px) {
       .chat-wrapper { max-width: 100%; height: 100vh; height: 100dvh; border-radius: 0; }
       .privacy-overlay { border-radius: 0; }
@@ -295,22 +262,20 @@
 
 <div class="chat-wrapper" style="position:relative;">
 
-  <!-- HEADER -->
   <div class="header">
-    <div class="header-avatar">🍝</div>
+    <div class="header-avatar">🍷</div>
     <div style="flex:1">
-      <div class="header-name">Trattoria Roma Antica</div>
-      <div class="header-subtitle">Assistente virtuale automatico</div>
+      <div class="header-name">Benso Ristorante</div>
+      <div class="header-subtitle">Enoteca Bistrot · Via Cavour 215, Roma</div>
       <div class="header-status"><div class="status-dot"></div> Online</div>
     </div>
     <button id="lang-badge" onclick="resetLang()">🌍 IT</button>
   </div>
 
-  <!-- PRIVACY OVERLAY (prima apertura) -->
   <div class="privacy-overlay" id="privacy-overlay">
     <div class="privacy-banner">
       <div>
-        <strong>🍝 Benvenuto all'Assistente Menu</strong>
+        <strong>🍷 Benvenuto da Benso Ristorante</strong>
         <p>
           Prima di continuare, ti informiamo che questa chat è gestita da un
           <b>assistente virtuale automatico</b> (AI). Le conversazioni vengono
@@ -325,54 +290,44 @@
     </div>
   </div>
 
-  <!-- MODAL PRIVACY POLICY -->
   <div class="modal-overlay" id="privacy-modal">
     <div class="modal-box">
       <h2>🔒 Privacy Policy</h2>
-
       <h3>Titolare del trattamento</h3>
-      <p>Trattoria Roma Antica — il ristoratore è titolare del trattamento dei dati raccolti tramite questo assistente.</p>
-
+      <p>Benso Ristorante Enoteca Bistrot — Via Cavour 215, 00184 Roma.<br>
+      Contatti: <b>info@bensoristoranteroma.com</b> · +39 06 4893 0947</p>
       <h3>Responsabile del trattamento</h3>
       <p>Il servizio tecnico è fornito da un soggetto terzo (fornitore del chatbot) che opera come responsabile del trattamento ai sensi dell'art. 28 GDPR.</p>
-
       <h3>Dati trattati</h3>
       <ul>
         <li>Messaggi inviati durante la conversazione</li>
         <li>Lingua selezionata</li>
         <li>Indirizzo IP (anonimizzato)</li>
       </ul>
-
       <h3>Finalità</h3>
       <p>I dati sono utilizzati esclusivamente per fornire risposte automatiche relative al menu del ristorante.</p>
-
       <h3>Conservazione</h3>
       <p>I dati delle conversazioni vengono eliminati automaticamente entro <b>30 giorni</b> dalla raccolta.</p>
-
       <h3>Diritti dell'interessato</h3>
-      <p>Ai sensi degli artt. 15-22 GDPR hai diritto di accesso, rettifica, cancellazione e opposizione. Per esercitare i tuoi diritti contatta direttamente il ristorante.</p>
-
+      <p>Ai sensi degli artt. 15-22 GDPR hai diritto di accesso, rettifica, cancellazione e opposizione. Per esercitare i tuoi diritti scrivi a <b>info@bensoristoranteroma.com</b>.</p>
       <h3>Base giuridica</h3>
       <p>Il trattamento si basa sul legittimo interesse (art. 6(1)(f) GDPR) limitato alla fornitura del servizio di assistenza al menu.</p>
-
       <h3>Allergeni (Reg. UE 1169/2011)</h3>
-      <p>Le informazioni fornite da questo assistente sugli allergeni sono <b>indicative</b>. Per informazioni ufficiali e vincolanti, rivolgersi sempre al personale del ristorante prima di ordinare.</p>
-
+      <p>Le informazioni sugli allergeni sono <b>indicative</b>. La cucina <b>non è certificata per celiaci</b>. Per informazioni vincolanti, rivolgersi sempre al personale prima di ordinare.</p>
       <button class="modal-close" onclick="closePrivacy()">Chiudi</button>
     </div>
   </div>
 
-  <!-- SCHERMATA LINGUA -->
   <div class="lang-screen" id="lang-screen" style="display:none;">
     <div class="lang-title">In che lingua preferisci? 🌍</div>
     <div class="lang-subtitle">Scegli la tua lingua o scrivila tu stesso</div>
     <div class="lang-grid">
-      <button class="lang-btn" onclick="selectLang('it','🇮🇹 IT')">🇮🇹 Italiano</button>
-      <button class="lang-btn" onclick="selectLang('en','🇺🇸 EN')">🇺🇸 English</button>
-      <button class="lang-btn" onclick="selectLang('es','🇪🇸 ES')">🇪🇸 Español</button>
-      <button class="lang-btn" onclick="selectLang('fr','🇫🇷 FR')">🇫🇷 Français</button>
-      <button class="lang-btn" onclick="selectLang('de','🇩🇪 DE')">🇩🇪 Deutsch</button>
-      <button class="lang-btn" onclick="selectLang('zh','🇨🇳 ZH')">🇨🇳 中文</button>
+      <button class="lang-btn" onclick="selectLang('it','IT')">🇮🇹 Italiano</button>
+      <button class="lang-btn" onclick="selectLang('en','EN')">🇺🇸 English</button>
+      <button class="lang-btn" onclick="selectLang('es','ES')">🇪🇸 Español</button>
+      <button class="lang-btn" onclick="selectLang('fr','FR')">🇫🇷 Français</button>
+      <button class="lang-btn" onclick="selectLang('de','DE')">🇩🇪 Deutsch</button>
+      <button class="lang-btn" onclick="selectLang('zh','ZH')">🇨🇳 中文</button>
     </div>
     <div class="lang-divider">altra lingua</div>
     <div class="lang-other-row">
@@ -381,228 +336,230 @@
     </div>
   </div>
 
-  <!-- CHAT -->
   <div class="chat-area" id="chat-area">
     <div class="messages" id="messages">
       <div class="typing" id="typing">
         <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
       </div>
     </div>
-
     <div class="quick-section">
       <span class="quick-label" id="quick-label">Chiedimi subito</span>
       <div class="quick-row" id="quick-row"></div>
     </div>
-
     <div class="input-area">
       <input type="text" id="input" placeholder="Scrivi una domanda...">
-      <button class="send-btn" id="send-btn">➤</button>
+      <button class="send-btn" id="send-btn">&#10148;</button>
     </div>
   </div>
 
 </div>
 
 <script>
-  const webhookUrl = 'https://rantu.app.n8n.cloud/webhook/ristorante-demo';
+  var webhookUrl = 'https://rantu.app.n8n.cloud/webhook/ristorante-demo';
+  var menuUrl    = 'https://www.bensoristoranteroma.com/menu-a-la-carte/';
 
-  const messagesDiv = document.getElementById('messages');
-  const inputEl     = document.getElementById('input');
-  const sendBtn     = document.getElementById('send-btn');
-  const typingEl    = document.getElementById('typing');
-  const langScreen  = document.getElementById('lang-screen');
-  const chatArea    = document.getElementById('chat-area');
-  const langBadge   = document.getElementById('lang-badge');
-  const quickRow    = document.getElementById('quick-row');
-  const quickLabel  = document.getElementById('quick-label');
+  var messagesDiv = document.getElementById('messages');
+  var inputEl     = document.getElementById('input');
+  var sendBtn     = document.getElementById('send-btn');
+  var typingEl    = document.getElementById('typing');
+  var langScreen  = document.getElementById('lang-screen');
+  var chatArea    = document.getElementById('chat-area');
+  var langBadge   = document.getElementById('lang-badge');
+  var quickRow    = document.getElementById('quick-row');
+  var quickLabel  = document.getElementById('quick-label');
 
-  let currentLang = 'it';
+  var currentLang = 'it';
 
-  // ── PRIVACY ──
   function acceptPrivacy() {
     document.getElementById('privacy-overlay').style.display = 'none';
     langScreen.style.display = 'flex';
-    // Salva consenso in sessionStorage (dura solo la sessione, no cookie persistenti)
     sessionStorage.setItem('privacy_accepted', '1');
   }
+  function openPrivacy()  { document.getElementById('privacy-modal').classList.add('open'); }
+  function closePrivacy() { document.getElementById('privacy-modal').classList.remove('open'); }
 
-  function openPrivacy() {
-    document.getElementById('privacy-modal').classList.add('open');
-  }
-
-  function closePrivacy() {
-    document.getElementById('privacy-modal').classList.remove('open');
-  }
-
-  // Se ha già accettato in questa sessione, salta overlay
   if (sessionStorage.getItem('privacy_accepted')) {
     document.getElementById('privacy-overlay').style.display = 'none';
     langScreen.style.display = 'flex';
   }
 
-  // ── QUICK BUTTONS ──
-  const quickByLang = {
+  var menuKeywords = ['menu completo','full menu','menú completo','menu complet','speisekarte','完整菜单'];
+
+  var quickByLang = {
     it: {
       label: 'Chiedimi subito',
       buttons: [
-        { text: '📋 Menu completo',          primary: true  },
-        { text: '🍝 Primi piatti',            primary: false },
-        { text: '🍖 Secondi piatti',          primary: false },
-        { text: '🥗 Antipasti',               primary: false },
-        { text: '🍷 Vini & bevande',          primary: false },
-        { text: '🍮 Dolci',                   primary: false },
-        { text: '⚠️ Ho un\'allergia',         primary: false },
-        { text: '💡 Cosa mi consigli?',       primary: false }
+        { text: '📋 Menu completo',        primary: true,  isMenu: true  },
+        { text: '🍳 Colazione',            primary: false, isMenu: false },
+        { text: '🥗 Antipasti',            primary: false, isMenu: false },
+        { text: '🍝 Pasta & Risotti',      primary: false, isMenu: false },
+        { text: '🍕 Pizza',                primary: false, isMenu: false },
+        { text: '🥩 Secondi',             primary: false, isMenu: false },
+        { text: '🐟 Pesce & Crostacei',    primary: false, isMenu: false },
+        { text: '🍮 Dolci',               primary: false, isMenu: false },
+        { text: '⚠️ Ho un\'allergia',      primary: false, isMenu: false },
+        { text: '💡 Cosa mi consigli?',    primary: false, isMenu: false }
       ]
     },
     en: {
       label: 'Ask me now',
       buttons: [
-        { text: '📋 Full menu',               primary: true  },
-        { text: '🍝 Pasta dishes',            primary: false },
-        { text: '🍖 Main courses',            primary: false },
-        { text: '🥗 Starters',                primary: false },
-        { text: '🍷 Wine & drinks',           primary: false },
-        { text: '🍮 Desserts',                primary: false },
-        { text: '⚠️ I have an allergy',       primary: false },
-        { text: '💡 What do you recommend?',  primary: false }
+        { text: '📋 Full menu',              primary: true,  isMenu: true  },
+        { text: '🍳 Breakfast',              primary: false, isMenu: false },
+        { text: '🥗 Starters',               primary: false, isMenu: false },
+        { text: '🍝 Pasta & Risotto',        primary: false, isMenu: false },
+        { text: '🍕 Pizza',                  primary: false, isMenu: false },
+        { text: '🥩 Main courses',           primary: false, isMenu: false },
+        { text: '🐟 Fish & Seafood',         primary: false, isMenu: false },
+        { text: '🍮 Desserts',               primary: false, isMenu: false },
+        { text: '⚠️ I have an allergy',      primary: false, isMenu: false },
+        { text: '💡 What do you recommend?', primary: false, isMenu: false }
       ]
     },
     es: {
       label: 'Pregúntame ahora',
       buttons: [
-        { text: '📋 Menú completo',           primary: true  },
-        { text: '🍝 Primeros',                primary: false },
-        { text: '🍖 Segundos',                primary: false },
-        { text: '🥗 Entrantes',               primary: false },
-        { text: '🍷 Vinos & bebidas',         primary: false },
-        { text: '🍮 Postres',                 primary: false },
-        { text: '⚠️ Tengo alergia',           primary: false },
-        { text: '💡 ¿Qué recomiendas?',       primary: false }
+        { text: '📋 Menú completo',       primary: true,  isMenu: true  },
+        { text: '🍳 Desayuno',            primary: false, isMenu: false },
+        { text: '🥗 Entrantes',           primary: false, isMenu: false },
+        { text: '🍝 Pasta & Risotto',     primary: false, isMenu: false },
+        { text: '🍕 Pizza',               primary: false, isMenu: false },
+        { text: '🥩 Segundos',           primary: false, isMenu: false },
+        { text: '🐟 Pescados & Mariscos', primary: false, isMenu: false },
+        { text: '🍮 Postres',             primary: false, isMenu: false },
+        { text: '⚠️ Tengo alergia',       primary: false, isMenu: false },
+        { text: '💡 ¿Qué recomiendas?',   primary: false, isMenu: false }
       ]
     },
     fr: {
       label: 'Demandez-moi',
       buttons: [
-        { text: '📋 Menu complet',            primary: true  },
-        { text: '🍝 Premiers plats',          primary: false },
-        { text: '🍖 Plats principaux',        primary: false },
-        { text: '🥗 Entrées',                 primary: false },
-        { text: '🍷 Vins & boissons',         primary: false },
-        { text: '🍮 Desserts',                primary: false },
-        { text: '⚠️ J\'ai une allergie',      primary: false },
-        { text: '💡 Que conseillez-vous?',    primary: false }
+        { text: '📋 Menu complet',            primary: true,  isMenu: true  },
+        { text: '🍳 Petit-déjeuner',          primary: false, isMenu: false },
+        { text: '🥗 Entrées',                 primary: false, isMenu: false },
+        { text: '🍝 Pâtes & Risotto',         primary: false, isMenu: false },
+        { text: '🍕 Pizza',                   primary: false, isMenu: false },
+        { text: '🥩 Plats principaux',        primary: false, isMenu: false },
+        { text: '🐟 Poisson & Fruits de mer', primary: false, isMenu: false },
+        { text: '🍮 Desserts',                primary: false, isMenu: false },
+        { text: '⚠️ J\'ai une allergie',      primary: false, isMenu: false },
+        { text: '💡 Que conseillez-vous?',    primary: false, isMenu: false }
       ]
     },
     de: {
       label: 'Fragen Sie mich',
       buttons: [
-        { text: '📋 Vollständige Speisekarte',primary: true  },
-        { text: '🍝 Erste Gänge',             primary: false },
-        { text: '🍖 Hauptspeisen',            primary: false },
-        { text: '🥗 Vorspeisen',              primary: false },
-        { text: '🍷 Wein & Getränke',         primary: false },
-        { text: '🍮 Desserts',                primary: false },
-        { text: '⚠️ Ich habe eine Allergie',  primary: false },
-        { text: '💡 Was empfehlen Sie?',      primary: false }
+        { text: '📋 Speisekarte',             primary: true,  isMenu: true  },
+        { text: '🍳 Frühstück',               primary: false, isMenu: false },
+        { text: '🥗 Vorspeisen',              primary: false, isMenu: false },
+        { text: '🍝 Pasta & Risotto',         primary: false, isMenu: false },
+        { text: '🍕 Pizza',                   primary: false, isMenu: false },
+        { text: '🥩 Hauptspeisen',            primary: false, isMenu: false },
+        { text: '🐟 Fisch & Meeresfrüchte',   primary: false, isMenu: false },
+        { text: '🍮 Desserts',                primary: false, isMenu: false },
+        { text: '⚠️ Ich habe eine Allergie',  primary: false, isMenu: false },
+        { text: '💡 Was empfehlen Sie?',      primary: false, isMenu: false }
       ]
     },
     zh: {
       label: '立即询问',
       buttons: [
-        { text: '📋 完整菜单',                primary: true  },
-        { text: '🍝 意面',                    primary: false },
-        { text: '🍖 主菜',                    primary: false },
-        { text: '🥗 前菜',                    primary: false },
-        { text: '🍷 葡萄酒 & 饮料',           primary: false },
-        { text: '🍮 甜点',                    primary: false },
-        { text: '⚠️ 我有过敏',               primary: false },
-        { text: '💡 你推荐什么？',             primary: false }
+        { text: '📋 完整菜单',      primary: true,  isMenu: true  },
+        { text: '🍳 早餐',          primary: false, isMenu: false },
+        { text: '🥗 前菜',          primary: false, isMenu: false },
+        { text: '🍝 意面 & 烩饭',   primary: false, isMenu: false },
+        { text: '🍕 披萨',          primary: false, isMenu: false },
+        { text: '🥩 主菜',          primary: false, isMenu: false },
+        { text: '🐟 鱼类 & 海鲜',   primary: false, isMenu: false },
+        { text: '🍮 甜点',          primary: false, isMenu: false },
+        { text: '⚠️ 我有过敏',      primary: false, isMenu: false },
+        { text: '💡 你推荐什么？',   primary: false, isMenu: false }
       ]
     }
   };
 
-  const welcomeByLang = {
-    it: 'Benvenuto alla Trattoria Roma Antica! Sono il tuo assistente virtuale. Chiedimi del menu, degli allergeni o cosa consiglio stasera. 🍝',
-    en: 'Welcome to Trattoria Roma Antica! Ask me about the menu, allergens or tonight\'s recommendations. 🍝',
-    es: '¡Bienvenido a Trattoria Roma Antica! Pregúntame sobre el menú, alérgenos o qué recomiendo esta noche. 🍝',
-    fr: 'Bienvenue à Trattoria Roma Antica ! Demandez-moi le menu, les allergènes ou mes recommandations du soir. 🍝',
-    de: 'Willkommen bei Trattoria Roma Antica! Fragen Sie mich nach der Speisekarte, Allergenen oder meinen Empfehlungen. 🍝',
-    zh: '欢迎光临罗马古老餐厅！请询问菜单、过敏信息或今晚推荐。🍝',
-    default: 'Welcome! Ask me about the menu. 🍝'
+  var placeholderByLang = {
+    it: 'Scrivi una domanda...',
+    en: 'Type a question...',
+    es: 'Escribe una pregunta...',
+    fr: 'Écrivez une question...',
+    de: 'Frage eingeben...',
+    zh: '输入问题...'
   };
 
-  // ── ALLERGENI ──
-  const allergyKeywords = [
+  var welcomeByLang = {
+    it: 'Benvenuto da **Benso Ristorante Enoteca Bistrot**! 🍷\nSono il tuo assistente virtuale. Chiedimi dei piatti, degli allergeni o cosa ti consiglio oggi!\n\n📍 Via Cavour 215, Roma · ☎️ +39 06 4893 0947',
+    en: 'Welcome to **Benso Ristorante Enoteca Bistrot**! 🍷\nAsk me about dishes, allergens or my recommendations!\n\n📍 Via Cavour 215, Rome · ☎️ +39 06 4893 0947',
+    es: '¡Bienvenido a **Benso Ristorante Enoteca Bistrot**! 🍷\nPregúntame sobre los platos, alérgenos o qué recomiendo hoy.\n\n📍 Via Cavour 215, Roma · ☎️ +39 06 4893 0947',
+    fr: 'Bienvenue chez **Benso Ristorante Enoteca Bistrot** ! 🍷\nDemandez-moi les plats, les allergènes ou mes recommandations !\n\n📍 Via Cavour 215, Rome · ☎️ +39 06 4893 0947',
+    de: 'Willkommen bei **Benso Ristorante Enoteca Bistrot**! 🍷\nFragen Sie mich nach Gerichten, Allergenen oder meinen Empfehlungen!\n\n📍 Via Cavour 215, Rom · ☎️ +39 06 4893 0947',
+    zh: '欢迎来到 **Benso Ristorante Enoteca Bistrot**！🍷\n请询问菜品、过敏原或今日推荐！\n\n📍 Via Cavour 215, 罗马 · ☎️ +39 06 4893 0947'
+  };
+
+  var allergyKeywords = [
     'allergi','allergene','intolleranz','celiachia','celiaco',
     'vegetarian','vegano','vegan','senza glutine','senza lattosio',
     'lattosio','glutine','frutta secca','arachidi','noci',
     'crostacei','molluschi','uova','soia','sesamo','pesce',
     'allerg','intoleran','gluten','lactose','dairy free',
-    'nut','shellfish','coeliac','celiac',
-    'alergi','allergie','unverträglichkeit','glutenfrei',
+    'nut','shellfish','coeliac','celiac','unvertraeglichkeit','glutenfrei',
     '过敏','不耐受','无麸质','无乳糖'
   ];
 
-  const warningByLang = {
-    it: { title: '⚠️ Attenzione — Allergeni & Intolleranze', text: 'Le informazioni fornite da questo assistente sono <b>indicative</b>. Per la tua sicurezza, <b>comunica sempre le tue allergie, intolleranze o esigenze alimentari direttamente al cameriere</b> prima di ordinare.' },
-    en: { title: '⚠️ Warning — Allergens & Intolerances', text: 'Information provided is <b>for guidance only</b>. For your safety, <b>always inform the waiter directly about any allergies, intolerances or dietary needs</b> before ordering.' },
-    es: { title: '⚠️ Atención — Alérgenos e Intolerancias', text: 'La información es <b>orientativa</b>. Por tu seguridad, <b>comunica siempre tus alergias o intolerancias al camarero</b> antes de pedir.' },
-    fr: { title: '⚠️ Attention — Allergènes & Intolérances', text: 'Les informations sont <b>indicatives</b>. Pour votre sécurité, <b>signalez toujours vos allergies ou intolérances au serveur</b> avant de commander.' },
-    de: { title: '⚠️ Achtung — Allergene & Unverträglichkeiten', text: 'Alle Angaben sind <b>unverbindlich</b>. Bitte <b>informieren Sie den Kellner immer direkt über Allergien oder Unverträglichkeiten</b>, bevor Sie bestellen.' },
-    zh: { title: '⚠️ 注意 — 过敏原与不耐受', text: '本助手提供的信息<b>仅供参考</b>。为了您的安全，<b>请在点餐前直接告知服务员您的过敏或饮食需求</b>。' },
-    default: { title: '⚠️ Warning — Allergens', text: 'For your safety, <b>always inform the waiter directly about any allergies or dietary requirements</b> before ordering.' }
+  var warningByLang = {
+    it: { title: '⚠️ Attenzione — Allergeni & Intolleranze', text: 'Le informazioni fornite sono <b>indicative</b>. La cucina <b>non è certificata per celiaci</b>. Per la tua sicurezza, <b>comunica sempre le tue allergie al cameriere</b> prima di ordinare, oppure chiama il <b>+39 06 4893 0947</b>.' },
+    en: { title: '⚠️ Warning — Allergens & Intolerances', text: 'Information provided is <b>for guidance only</b>. The kitchen is <b>not certified for coeliacs</b>. <b>Always inform the waiter directly</b> about any allergies before ordering, or call <b>+39 06 4893 0947</b>.' },
+    es: { title: '⚠️ Atención — Alérgenos e Intolerancias', text: 'La información es <b>orientativa</b>. La cocina <b>no está certificada para celíacos</b>. <b>Comunica siempre tus alergias al camarero</b> antes de pedir. Tel: <b>+39 06 4893 0947</b>.' },
+    fr: { title: '⚠️ Attention — Allergènes & Intolérances', text: 'Les informations sont <b>indicatives</b>. La cuisine <b>n\'est pas certifiée pour les cœliaques</b>. <b>Signalez toujours vos allergies au serveur</b>. Tél: <b>+39 06 4893 0947</b>.' },
+    de: { title: '⚠️ Achtung — Allergene & Unverträglichkeiten', text: 'Alle Angaben sind <b>unverbindlich</b>. Die Küche ist <b>nicht für Zöliakie zertifiziert</b>. Bitte <b>informieren Sie den Kellner immer direkt</b>. Tel: <b>+39 06 4893 0947</b>.' },
+    zh: { title: '⚠️ 注意 — 过敏原与不耐受', text: '本助手信息<b>仅供参考</b>。厨房<b>未获乳糜泻认证</b>。<b>请在点餐前直接告知服务员</b>。电话: <b>+39 06 4893 0947</b>。' }
   };
 
-  // ── KEYWORD PREZZI/INFO AGGIORNAMENTO ──
-  const priceKeywords = ['prezzo','prezzi','quanto costa','costo','price','cost','prix','preis','价格','多少钱'];
+  var priceKeywords = ['prezzo','prezzi','quanto costa','costo','price','cost','prix','preis','价格','多少钱'];
 
-  const priceDisclaimerByLang = {
-    it: 'ℹ️ I prezzi e la disponibilità dei piatti potrebbero variare. Verifica sempre con il personale del ristorante.',
-    en: 'ℹ️ Prices and dish availability may vary. Always confirm with restaurant staff.',
-    es: 'ℹ️ Los precios y la disponibilidad pueden variar. Confirma siempre con el personal del restaurante.',
-    fr: 'ℹ️ Les prix et la disponibilité peuvent varier. Confirmez toujours avec le personnel.',
-    de: 'ℹ️ Preise und Verfügbarkeit können variieren. Bitte beim Personal nachfragen.',
-    zh: 'ℹ️ 价格和菜品供应情况可能有所变化，请向餐厅员工确认。',
-    default: 'ℹ️ Prices and availability may vary. Please confirm with staff.'
+  var priceDisclaimerByLang = {
+    it: 'ℹ️ I prezzi e la disponibilità dei piatti potrebbero variare. Verifica con il personale · +39 06 4893 0947',
+    en: 'ℹ️ Prices and availability may vary. Always confirm with restaurant staff · +39 06 4893 0947',
+    es: 'ℹ️ Los precios y disponibilidad pueden variar. Confirma con el personal · +39 06 4893 0947',
+    fr: 'ℹ️ Les prix et la disponibilité peuvent varier. Confirmez avec le personnel · +39 06 4893 0947',
+    de: 'ℹ️ Preise und Verfügbarkeit können variieren. Bitte beim Personal nachfragen · +39 06 4893 0947',
+    zh: 'ℹ️ 价格和菜品供应情况可能变化，请向员工确认 · +39 06 4893 0947'
   };
 
-  function containsAllergyKeyword(text) {
-    const lower = text.toLowerCase();
-    return allergyKeywords.some(kw => lower.includes(kw));
-  }
-
-  function containsPriceKeyword(text) {
-    const lower = text.toLowerCase();
-    return priceKeywords.some(kw => lower.includes(kw));
+  function containsKeyword(text, list) {
+    var lower = text.toLowerCase();
+    for (var i = 0; i < list.length; i++) {
+      if (lower.indexOf(list[i]) !== -1) return true;
+    }
+    return false;
   }
 
   function addAllergyWarning() {
-    const warn = warningByLang[currentLang] || warningByLang['default'];
-    const div = document.createElement('div');
+    var warn = warningByLang[currentLang] || warningByLang['it'];
+    var div = document.createElement('div');
     div.className = 'allergy-warning';
-    div.innerHTML = `<strong>${warn.title}</strong>${warn.text}`;
+    div.innerHTML = '<strong>' + warn.title + '</strong>' + warn.text;
     messagesDiv.insertBefore(div, typingEl);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
   function addPriceDisclaimer() {
-    const text = priceDisclaimerByLang[currentLang] || priceDisclaimerByLang['default'];
-    const div = document.createElement('div');
+    var text = priceDisclaimerByLang[currentLang] || priceDisclaimerByLang['it'];
+    var div = document.createElement('div');
     div.className = 'info-disclaimer';
     div.textContent = text;
     messagesDiv.insertBefore(div, typingEl);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
-  // ── LINGUA ──
   function selectLang(code, label) {
     currentLang = code;
-    langBadge.textContent = '🌍 ' + label.split(' ')[1];
+    langBadge.textContent = '🌍 ' + label;
     startChat();
   }
 
   function selectCustomLang() {
-    const val = document.getElementById('lang-other-input').value.trim();
+    var val = document.getElementById('lang-other-input').value.trim();
     if (!val) return;
     currentLang = val.toLowerCase();
     langBadge.textContent = '🌍 ' + val;
@@ -617,78 +574,103 @@
   function startChat() {
     langScreen.style.display = 'none';
     chatArea.classList.add('active');
+    inputEl.placeholder = placeholderByLang[currentLang] || 'Type a question...';
     buildQuickButtons();
-    addMessage(welcomeByLang[currentLang] || welcomeByLang['default'], 'bot');
+    var welcome = welcomeByLang[currentLang] || welcomeByLang['en'];
+    addMessage(welcome, 'bot');
   }
 
-  // ── BOTTONI ──
   function buildQuickButtons() {
     quickRow.innerHTML = '';
-    const data = quickByLang[currentLang] || quickByLang['en'];
+    var data = quickByLang[currentLang] || quickByLang['en'];
     quickLabel.textContent = data.label;
-    data.buttons.forEach(item => {
-      const btn = document.createElement('button');
+    data.buttons.forEach(function(item) {
+      var btn = document.createElement('button');
       btn.className = 'quick-btn' + (item.primary ? ' primary' : '');
       btn.textContent = item.text;
-      btn.addEventListener('click', () => sendMessage(item.text));
+      if (item.isMenu) {
+        btn.addEventListener('click', function() {
+          window.open(menuUrl, '_blank');
+        });
+      } else {
+        btn.addEventListener('click', function() {
+          sendMessage(item.text);
+        });
+      }
       quickRow.appendChild(btn);
     });
   }
 
-  // ── CHAT ──
   function formatText(text) {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
       .replace(/\*(.*?)\*/g, '<i>$1</i>')
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g, '<br>')
+      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   }
 
   function addMessage(text, type) {
-    const div = document.createElement('div');
-    div.className = `message ${type}`;
-    if (type === 'bot') div.innerHTML = formatText(text);
-    else div.textContent = text;
+    var div = document.createElement('div');
+    div.className = 'message ' + type;
+    if (type === 'bot') {
+      div.innerHTML = formatText(text);
+    } else {
+      div.textContent = text;
+    }
     messagesDiv.insertBefore(div, typingEl);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
 
   function setLoading(on) {
     sendBtn.disabled = on;
-    typingEl.classList.toggle('visible', on);
-    if (on) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    if (on) {
+      typingEl.classList.add('visible');
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    } else {
+      typingEl.classList.remove('visible');
+    }
   }
 
-  async function sendMessage(customText) {
-    const text = customText !== undefined ? customText : inputEl.value.trim();
+  function sendMessage(customText) {
+    var text = (customText !== undefined) ? customText : inputEl.value.trim();
     if (!text) return;
+
+    if (containsKeyword(text, menuKeywords)) {
+      window.open(menuUrl, '_blank');
+      return;
+    }
+
     addMessage(text, 'user');
     inputEl.value = '';
     inputEl.blur();
 
-    // Banner allergeni
-    if (containsAllergyKeyword(text)) addAllergyWarning();
-    // Disclaimer prezzi
-    if (containsPriceKeyword(text)) addPriceDisclaimer();
+    if (containsKeyword(text, allergyKeywords)) addAllergyWarning();
+    if (containsKeyword(text, priceKeywords)) addPriceDisclaimer();
 
     setLoading(true);
-    try {
-      const res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, lang: currentLang })
-      });
-      const botReply = res.ok ? await res.text() : `Errore ${res.status}. Riprova.`;
+
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, lang: currentLang })
+    })
+    .then(function(res) {
+      if (res.ok) return res.text();
+      return 'Errore ' + res.status + '. Riprova.';
+    })
+    .then(function(botReply) {
       setLoading(false);
       addMessage(botReply, 'bot');
-    } catch (err) {
+    })
+    .catch(function() {
       setLoading(false);
       addMessage('Errore di connessione. Controlla che n8n sia attivo.', 'bot');
-    }
+    });
   }
 
-  sendBtn.addEventListener('click', () => sendMessage());
-  inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-  document.getElementById('lang-other-input').addEventListener('keydown', e => {
+  sendBtn.addEventListener('click', function() { sendMessage(); });
+  inputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+  document.getElementById('lang-other-input').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') selectCustomLang();
   });
 </script>
