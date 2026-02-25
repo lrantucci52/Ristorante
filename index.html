@@ -17,13 +17,16 @@
       --user-bubble: #8b2a2a;
       --bot-bubble: #fff3e8;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(160deg, #ede0cf 0%, #f9f5f0 100%);
       display: flex; justify-content: center; align-items: center;
       min-height: 100vh; min-height: 100dvh;
     }
+
     .chat-wrapper {
       width: 100%; max-width: 440px;
       height: 92vh; height: 92dvh; max-height: 780px;
@@ -32,7 +35,9 @@
       border: 1.5px solid var(--border);
       box-shadow: 0 24px 64px rgba(139,42,42,0.13);
       display: flex; flex-direction: column; overflow: hidden;
+      position: relative;
     }
+
     .header {
       padding: 14px 16px;
       background: linear-gradient(135deg, var(--accent), #6e1f1f);
@@ -40,6 +45,7 @@
       display: flex; align-items: center; gap: 12px;
       flex-shrink: 0;
     }
+
     .header-avatar {
       width: 46px; height: 46px; border-radius: 50%;
       background: rgba(255,255,255,0.15);
@@ -47,35 +53,61 @@
       font-size: 24px; flex-shrink: 0;
       border: 2px solid rgba(255,255,255,0.3);
     }
-    .header-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
-    .header-subtitle { font-size: 10px; opacity: 0.75; margin-top: 1px; letter-spacing: 0.03em; }
-    .header-status { font-size: 11px; opacity: 0.85; display: flex; align-items: center; gap: 5px; margin-top: 2px; }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+
+    .header-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700;
+    }
+    .header-subtitle {
+      font-size: 10px; opacity: 0.75;
+      margin-top: 1px; letter-spacing: 0.03em;
+    }
+    .header-status {
+      font-size: 11px; opacity: 0.85;
+      display: flex; align-items: center; gap: 5px; margin-top: 2px;
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80; animation: pulse 2s infinite;
+    }
     @keyframes pulse {
       0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
       50%      { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
     }
+
     #lang-badge {
-      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
       color: white; padding: 6px 12px; border-radius: 20px;
       font-size: 12px; cursor: pointer; white-space: nowrap;
       font-family: 'Inter', sans-serif;
     }
+
     .privacy-overlay {
       position: absolute; inset: 0; z-index: 100;
       background: rgba(15,10,5,0.7);
       display: flex; align-items: flex-end;
       border-radius: 24px; overflow: hidden;
     }
+
     .privacy-banner {
       width: 100%; background: var(--card);
       padding: 20px 20px 24px;
       border-top: 2px solid var(--border);
       display: flex; flex-direction: column; gap: 12px;
     }
-    .privacy-banner p { font-size: 12px; color: var(--muted); line-height: 1.6; }
-    .privacy-banner a { color: var(--accent); text-decoration: underline; cursor: pointer; }
-    .privacy-banner strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+
+    .privacy-banner p {
+      font-size: 12px; color: var(--muted); line-height: 1.6;
+    }
+    .privacy-banner a {
+      color: var(--accent); text-decoration: underline; cursor: pointer;
+    }
+    .privacy-banner strong {
+      display: block; font-size: 14px; color: var(--text);
+      margin-bottom: 2px;
+    }
+
     .privacy-btn {
       padding: 12px; border-radius: 12px; border: none;
       background: var(--accent); color: white;
@@ -83,30 +115,89 @@
       font-family: 'Inter', sans-serif; width: 100%;
     }
     .privacy-btn:hover { background: var(--accent-hover); }
+
+    .modal-overlay {
+      position: absolute; inset: 0; z-index: 200;
+      background: rgba(15,10,5,0.75);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; border-radius: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--card); border-radius: 20px;
+      border: 1.5px solid var(--border);
+      padding: 24px 20px; max-height: 80vh;
+      overflow-y: auto; width: 100%;
+    }
+    .modal-box h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--accent); font-size: 18px; margin-bottom: 12px;
+    }
+    .modal-box h3 {
+      font-size: 13px; font-weight: 700;
+      color: var(--text); margin: 14px 0 4px;
+    }
+    .modal-box p, .modal-box li {
+      font-size: 12px; color: var(--muted); line-height: 1.7;
+    }
+    .modal-box ul { padding-left: 16px; }
+    .modal-close {
+      width: 100%; margin-top: 20px; padding: 12px;
+      background: var(--accent); color: white; border: none;
+      border-radius: 12px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+    }
+    .modal-close:hover { background: var(--accent-hover); }
+
     .lang-screen {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      flex: 1; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
       padding: 28px 24px; gap: 16px; background: var(--bg);
     }
-    .lang-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent); text-align: center; font-weight: 700; line-height: 1.3; }
-    .lang-subtitle { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
-    .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+    .lang-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; color: var(--accent); text-align: center;
+      font-weight: 700; line-height: 1.3;
+    }
+    .lang-subtitle {
+      font-size: 13px; color: var(--muted);
+      text-align: center; line-height: 1.5;
+    }
+    .lang-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; width: 100%;
+    }
     .lang-btn {
-      padding: 14px 12px; border-radius: 14px; border: 1.5px solid var(--border);
-      background: white; color: var(--text); font-size: 15px; cursor: pointer;
+      padding: 14px 12px; border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: white; color: var(--text);
+      font-size: 15px; cursor: pointer;
       transition: all 0.18s; font-weight: 500;
       display: flex; align-items: center; gap: 8px;
       font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    .lang-btn:hover, .lang-btn:active { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.03); }
-    .lang-divider { display: flex; align-items: center; gap: 10px; width: 100%; color: var(--muted); font-size: 12px; }
-    .lang-divider::before, .lang-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .lang-other-row { display: flex; gap: 10px; width: 100%; }
+    .lang-btn:hover, .lang-btn:active {
+      background: var(--accent); color: white; border-color: var(--accent);
+      transform: scale(1.03);
+    }
+    .lang-divider {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; color: var(--muted); font-size: 12px;
+    }
+    .lang-divider::before, .lang-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+    .lang-other-row {
+      display: flex; gap: 10px; width: 100%;
+    }
     #lang-other-input {
       flex: 1; padding: 12px 16px; border-radius: 12px;
       border: 1.5px solid var(--border); background: white;
       font-size: 15px; outline: none; font-family: 'Inter', sans-serif;
+      autocomplete: off;
     }
     #lang-other-input:focus { border-color: var(--accent); }
     #lang-other-input::placeholder { color: #bfa98c; }
@@ -117,8 +208,13 @@
       font-family: 'Inter', sans-serif;
     }
     .lang-confirm-btn:hover { background: var(--accent-hover); }
-    .chat-area { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+
+    .chat-area {
+      display: none; flex: 1;
+      flex-direction: column; overflow: hidden;
+    }
     .chat-area.active { display: flex; }
+
     .messages {
       flex: 1; overflow-y: auto; padding: 14px 12px;
       display: flex; flex-direction: column; gap: 10px;
@@ -126,6 +222,7 @@
     }
     .messages::-webkit-scrollbar { width: 4px; }
     .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
     .message {
       padding: 11px 15px; border-radius: 18px;
       max-width: 84%; font-size: 14px; line-height: 1.55;
@@ -135,9 +232,11 @@
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
     .user {
       background: var(--user-bubble); color: white;
-      align-self: flex-end; border-bottom-right-radius: 5px; font-weight: 500;
+      align-self: flex-end; border-bottom-right-radius: 5px;
+      font-weight: 500;
     }
     .bot {
       background: var(--bot-bubble); color: var(--text);
@@ -146,21 +245,33 @@
       font-family: 'Playfair Display', serif;
     }
     .bot b { color: var(--accent); }
-    .bot a { color: var(--accent); text-decoration: underline; word-break: break-all; }
+    .bot a {
+      color: var(--accent); text-decoration: underline;
+      word-break: break-all;
+    }
+
     .typing {
       display: none; align-items: center; gap: 5px;
       padding: 11px 15px; background: var(--bot-bubble);
       border: 1px solid var(--border); border-radius: 18px;
-      border-bottom-left-radius: 5px; max-width: 70px; align-self: flex-start;
+      border-bottom-left-radius: 5px; max-width: 70px;
+      align-self: flex-start;
     }
     .typing.visible { display: flex; }
-    .t-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite ease-in-out; }
+
+    .t-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted);
+      animation: bounce 1.2s infinite ease-in-out;
+    }
     .t-dot:nth-child(2) { animation-delay: 0.2s; }
     .t-dot:nth-child(3) { animation-delay: 0.4s; }
+
     @keyframes bounce {
       0%,60%,100% { transform: translateY(0); opacity: 0.4; }
       30%          { transform: translateY(-5px); opacity: 1; }
     }
+
     .allergy-warning {
       background: #fff8e1; border: 1.5px solid #f0a500;
       border-left: 5px solid #f0a500;
@@ -169,7 +280,11 @@
       color: #5a3e00; align-self: flex-start; max-width: 90%;
       animation: fadeUp 0.2s ease; font-family: 'Inter', sans-serif;
     }
-    .allergy-warning strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: #a05c00; }
+    .allergy-warning strong {
+      display: block; font-size: 13px; font-weight: 700;
+      margin-bottom: 5px; color: #a05c00;
+    }
+
     .info-disclaimer {
       background: #f0f4ff; border: 1.5px solid #a0b4e0;
       border-left: 5px solid #4a6fa5;
@@ -178,13 +293,41 @@
       color: #2a3a5c; align-self: flex-start; max-width: 90%;
       animation: fadeUp 0.2s ease; font-family: 'Inter', sans-serif;
     }
+
     .quick-section {
-      padding: 10px 12px 8px; background: var(--bg);
-      border-top: 1px solid var(--border); flex-shrink: 0;
+      padding: 8px 12px 6px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
     }
-    .quick-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block; }
-    .quick-row { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .quick-label {
+      font-size: 10px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 4px; display: block;
+    }
+
+    .quick-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .quick-row.compact {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .quick-row.compact::-webkit-scrollbar { height: 3px; }
+    .quick-row.compact::-webkit-scrollbar-thumb {
+      background: var(--border); border-radius: 999px;
+    }
+
     .quick-btn {
+      flex-shrink: 0;
       padding: 8px 15px; border-radius: 999px; font-size: 13px;
       border: 1.5px solid var(--border); color: var(--muted);
       background: white; cursor: pointer;
@@ -204,10 +347,12 @@
     .quick-btn.primary:hover, .quick-btn.primary:active {
       background: var(--accent-hover); color: white; border-color: var(--accent-hover);
     }
+
     .input-area {
       padding: 10px 12px 16px; background: var(--bg);
       border-top: 1px solid var(--border);
-      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+      display: flex; gap: 8px; align-items: center;
+      flex-shrink: 0;
     }
     #input {
       flex: 1; padding: 11px 16px; border-radius: 999px;
@@ -215,8 +360,12 @@
       color: var(--text); font-size: 16px; outline: none;
       font-family: 'Inter', sans-serif; touch-action: manipulation;
     }
-    #input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,42,42,0.1); }
+    #input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139,42,42,0.1);
+    }
     #input::placeholder { color: #bfa98c; }
+
     .send-btn {
       width: 44px; height: 44px; border-radius: 50%; border: none;
       background: var(--accent); color: white; font-size: 18px;
@@ -227,30 +376,7 @@
     .send-btn:hover { background: var(--accent-hover); }
     .send-btn:active { transform: scale(0.93); }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .modal-overlay {
-      position: absolute; inset: 0; z-index: 200;
-      background: rgba(15,10,5,0.75);
-      display: none; align-items: center; justify-content: center;
-      padding: 20px; border-radius: 24px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: var(--card); border-radius: 20px;
-      border: 1.5px solid var(--border);
-      padding: 24px 20px; max-height: 80vh;
-      overflow-y: auto; width: 100%;
-    }
-    .modal-box h2 { font-family: 'Playfair Display', serif; color: var(--accent); font-size: 18px; margin-bottom: 12px; }
-    .modal-box h3 { font-size: 13px; font-weight: 700; color: var(--text); margin: 14px 0 4px; }
-    .modal-box p, .modal-box li { font-size: 12px; color: var(--muted); line-height: 1.7; }
-    .modal-box ul { padding-left: 16px; }
-    .modal-close {
-      width: 100%; margin-top: 20px; padding: 12px;
-      background: var(--accent); color: white; border: none;
-      border-radius: 12px; font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-    }
-    .modal-close:hover { background: var(--accent-hover); }
+
     @media (max-width: 480px) {
       .chat-wrapper { max-width: 100%; height: 100vh; height: 100dvh; border-radius: 0; }
       .privacy-overlay { border-radius: 0; }
@@ -260,18 +386,22 @@
 </head>
 <body>
 
-<div class="chat-wrapper" style="position:relative;">
+<div class="chat-wrapper">
 
+  <!-- HEADER -->
   <div class="header">
     <div class="header-avatar">🍷</div>
     <div style="flex:1">
       <div class="header-name">Benso Ristorante</div>
       <div class="header-subtitle">Enoteca Bistrot · Via Cavour 215, Roma</div>
-      <div class="header-status"><div class="status-dot"></div> Online</div>
+      <div class="header-status">
+        <div class="status-dot"></div> Online
+      </div>
     </div>
     <button id="lang-badge" onclick="resetLang()">🌍 IT</button>
   </div>
 
+  <!-- PRIVACY OVERLAY -->
   <div class="privacy-overlay" id="privacy-overlay">
     <div class="privacy-banner">
       <div>
@@ -290,6 +420,7 @@
     </div>
   </div>
 
+  <!-- MODAL PRIVACY -->
   <div class="modal-overlay" id="privacy-modal">
     <div class="modal-box">
       <h2>🔒 Privacy Policy</h2>
@@ -318,7 +449,8 @@
     </div>
   </div>
 
-  <div class="lang-screen" id="lang-screen" style="display:none;">
+  <!-- LANG SCREEN -->
+  <div class="lang-screen" id="lang-screen">
     <div class="lang-title">In che lingua preferisci? 🌍</div>
     <div class="lang-subtitle">Scegli la tua lingua o scrivila tu stesso</div>
     <div class="lang-grid">
@@ -331,23 +463,26 @@
     </div>
     <div class="lang-divider">altra lingua</div>
     <div class="lang-other-row">
-      <input type="text" id="lang-other-input" placeholder="Es: Português, عربي, 日本語...">
+      <input type="text" id="lang-other-input" placeholder="Es: Português, عربي, 日本語..." autocomplete="off">
       <button class="lang-confirm-btn" onclick="selectCustomLang()">Conferma</button>
     </div>
   </div>
 
+  <!-- CHAT AREA -->
   <div class="chat-area" id="chat-area">
     <div class="messages" id="messages">
       <div class="typing" id="typing">
         <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
       </div>
     </div>
+
     <div class="quick-section">
       <span class="quick-label" id="quick-label">Chiedimi subito</span>
       <div class="quick-row" id="quick-row"></div>
     </div>
+
     <div class="input-area">
-      <input type="text" id="input" placeholder="Scrivi una domanda...">
+      <input type="text" id="input" placeholder="Scrivi una domanda..." autocomplete="off" inputmode="text">
       <button class="send-btn" id="send-btn">&#10148;</button>
     </div>
   </div>
@@ -357,6 +492,7 @@
 <script>
   var webhookUrl = 'https://rantu.app.n8n.cloud/webhook/ristorante-demo';
   var menuUrl    = 'https://www.bensoristoranteroma.com/menu-a-la-carte/';
+  var MAX_HISTORY = 10;
 
   var messagesDiv = document.getElementById('messages');
   var inputEl     = document.getElementById('input');
@@ -368,20 +504,31 @@
   var quickRow    = document.getElementById('quick-row');
   var quickLabel  = document.getElementById('quick-label');
 
-  var currentLang = 'it';
+  var currentLang           = 'it';
+  var conversationHistory   = [];
+  var quickAlreadyCollapsed = false;
+  var allergyWarningShown   = false;
+  var priceDisclaimerShown  = false;
 
-  function acceptPrivacy() {
-    document.getElementById('privacy-overlay').style.display = 'none';
-    langScreen.style.display = 'flex';
-    sessionStorage.setItem('privacy_accepted', '1');
-  }
-  function openPrivacy()  { document.getElementById('privacy-modal').classList.add('open'); }
-  function closePrivacy() { document.getElementById('privacy-modal').classList.remove('open'); }
+  // ── ERRORI LOCALIZZATI ─────────────────────────────────────────────────
+  var errorByLang = {
+    it: { server: '⚠️ Errore {code} dal server. Riprova tra un momento.', network: '⚠️ Nessuna connessione. Controlla la rete e riprova.' },
+    en: { server: '⚠️ Server error {code}. Please try again shortly.',    network: '⚠️ Connection error. Check your network and try again.' },
+    es: { server: '⚠️ Error del servidor {code}. Por favor, inténtalo.',   network: '⚠️ Error de conexión. Comprueba tu red.' },
+    fr: { server: '⚠️ Erreur serveur {code}. Veuillez réessayer.',         network: '⚠️ Erreur de connexion. Vérifiez votre réseau.' },
+    de: { server: '⚠️ Serverfehler {code}. Bitte erneut versuchen.',       network: '⚠️ Verbindungsfehler. Überprüfen Sie Ihre Verbindung.' },
+    zh: { server: '⚠️ 服务器错误 {code}，请稍后重试。',                        network: '⚠️ 连接错误，请检查网络后重试。' }
+  };
 
-  if (sessionStorage.getItem('privacy_accepted')) {
-    document.getElementById('privacy-overlay').style.display = 'none';
-    langScreen.style.display = 'flex';
-  }
+  // ── FEEDBACK MENU ──────────────────────────────────────────────────────
+  var menuFeedbackByLang = {
+    it: '📋 Apro il menu completo per te!\n👉 ' + menuUrl,
+    en: '📋 Opening the full menu for you!\n👉 ' + menuUrl,
+    es: '📋 ¡Aquí tienes el menú completo!\n👉 ' + menuUrl,
+    fr: '📋 Voici le menu complet !\n👉 ' + menuUrl,
+    de: '📋 Hier ist die vollständige Speisekarte!\n👉 ' + menuUrl,
+    zh: '📋 这是完整菜单！\n👉 ' + menuUrl
+  };
 
   var menuKeywords = ['menu completo','full menu','menú completo','menu complet','speisekarte','完整菜单'];
 
@@ -394,10 +541,10 @@
         { text: '🥗 Antipasti',            primary: false, isMenu: false },
         { text: '🍝 Pasta & Risotti',      primary: false, isMenu: false },
         { text: '🍕 Pizza',                primary: false, isMenu: false },
-        { text: '🥩 Secondi',             primary: false, isMenu: false },
+        { text: '🥩 Secondi',              primary: false, isMenu: false },
         { text: '🐟 Pesce & Crostacei',    primary: false, isMenu: false },
-        { text: '🍮 Dolci',               primary: false, isMenu: false },
-        { text: '⚠️ Ho un\'allergia',      primary: false, isMenu: false },
+        { text: '🍮 Dolci',                primary: false, isMenu: false },
+        { text: "⚠️ Ho un'allergia",       primary: false, isMenu: false },
         { text: '💡 Cosa mi consigli?',    primary: false, isMenu: false }
       ]
     },
@@ -424,7 +571,7 @@
         { text: '🥗 Entrantes',           primary: false, isMenu: false },
         { text: '🍝 Pasta & Risotto',     primary: false, isMenu: false },
         { text: '🍕 Pizza',               primary: false, isMenu: false },
-        { text: '🥩 Segundos',           primary: false, isMenu: false },
+        { text: '🥩 Segundos',            primary: false, isMenu: false },
         { text: '🐟 Pescados & Mariscos', primary: false, isMenu: false },
         { text: '🍮 Postres',             primary: false, isMenu: false },
         { text: '⚠️ Tengo alergia',       primary: false, isMenu: false },
@@ -442,7 +589,7 @@
         { text: '🥩 Plats principaux',        primary: false, isMenu: false },
         { text: '🐟 Poisson & Fruits de mer', primary: false, isMenu: false },
         { text: '🍮 Desserts',                primary: false, isMenu: false },
-        { text: '⚠️ J\'ai une allergie',      primary: false, isMenu: false },
+        { text: "⚠️ J'ai une allergie",       primary: false, isMenu: false },
         { text: '💡 Que conseillez-vous?',    primary: false, isMenu: false }
       ]
     },
@@ -502,15 +649,15 @@
     'lattosio','glutine','frutta secca','arachidi','noci',
     'crostacei','molluschi','uova','soia','sesamo','pesce',
     'allerg','intoleran','gluten','lactose','dairy free',
-    'nut','shellfish','coeliac','celiac','unvertraeglichkeit','glutenfrei',
+    'nut','shellfish','coeliac','celiac','glutenfrei',
     '过敏','不耐受','无麸质','无乳糖'
   ];
 
   var warningByLang = {
     it: { title: '⚠️ Attenzione — Allergeni & Intolleranze', text: 'Le informazioni fornite sono <b>indicative</b>. La cucina <b>non è certificata per celiaci</b>. Per la tua sicurezza, <b>comunica sempre le tue allergie al cameriere</b> prima di ordinare, oppure chiama il <b>+39 06 4893 0947</b>.' },
-    en: { title: '⚠️ Warning — Allergens & Intolerances', text: 'Information provided is <b>for guidance only</b>. The kitchen is <b>not certified for coeliacs</b>. <b>Always inform the waiter directly</b> about any allergies before ordering, or call <b>+39 06 4893 0947</b>.' },
+    en: { title: '⚠️ Warning — Allergens & Intolerances',   text: 'Information provided is <b>for guidance only</b>. The kitchen is <b>not certified for coeliacs</b>. <b>Always inform the waiter directly</b> about any allergies before ordering, or call <b>+39 06 4893 0947</b>.' },
     es: { title: '⚠️ Atención — Alérgenos e Intolerancias', text: 'La información es <b>orientativa</b>. La cocina <b>no está certificada para celíacos</b>. <b>Comunica siempre tus alergias al camarero</b> antes de pedir. Tel: <b>+39 06 4893 0947</b>.' },
-    fr: { title: '⚠️ Attention — Allergènes & Intolérances', text: 'Les informations sont <b>indicatives</b>. La cuisine <b>n\'est pas certifiée pour les cœliaques</b>. <b>Signalez toujours vos allergies au serveur</b>. Tél: <b>+39 06 4893 0947</b>.' },
+    fr: { title: '⚠️ Attention — Allergènes & Intolérances', text: "Les informations sont <b>indicatives</b>. La cuisine <b>n'est pas certifiée pour les cœliaques</b>. <b>Signalez toujours vos allergies au serveur</b>. Tél: <b>+39 06 4893 0947</b>." },
     de: { title: '⚠️ Achtung — Allergene & Unverträglichkeiten', text: 'Alle Angaben sind <b>unverbindlich</b>. Die Küche ist <b>nicht für Zöliakie zertifiziert</b>. Bitte <b>informieren Sie den Kellner immer direkt</b>. Tel: <b>+39 06 4893 0947</b>.' },
     zh: { title: '⚠️ 注意 — 过敏原与不耐受', text: '本助手信息<b>仅供参考</b>。厨房<b>未获乳糜泻认证</b>。<b>请在点餐前直接告知服务员</b>。电话: <b>+39 06 4893 0947</b>。' }
   };
@@ -526,6 +673,20 @@
     zh: 'ℹ️ 价格和菜品供应情况可能变化，请向员工确认 · +39 06 4893 0947'
   };
 
+  // ── PARSE RISPOSTA N8N (plain text o JSON) ─────────────────────────────
+  function parseReply(rawText) {
+    var trimmed = rawText.trim();
+    try {
+      var json = JSON.parse(trimmed);
+      if (Array.isArray(json) && json[0]) {
+        return json[0].output || json[0].message || json[0].text || json[0].reply || trimmed;
+      }
+      return json.output || json.message || json.text || json.reply || trimmed;
+    } catch(e) {
+      return trimmed;
+    }
+  }
+
   function containsKeyword(text, list) {
     var lower = text.toLowerCase();
     for (var i = 0; i < list.length; i++) {
@@ -535,6 +696,8 @@
   }
 
   function addAllergyWarning() {
+    if (allergyWarningShown) return;
+    allergyWarningShown = true;
     var warn = warningByLang[currentLang] || warningByLang['it'];
     var div = document.createElement('div');
     div.className = 'allergy-warning';
@@ -544,12 +707,27 @@
   }
 
   function addPriceDisclaimer() {
+    if (priceDisclaimerShown) return;
+    priceDisclaimerShown = true;
     var text = priceDisclaimerByLang[currentLang] || priceDisclaimerByLang['it'];
     var div = document.createElement('div');
     div.className = 'info-disclaimer';
     div.textContent = text;
     messagesDiv.insertBefore(div, typingEl);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  function acceptPrivacy() {
+    document.getElementById('privacy-overlay').style.display = 'none';
+    langScreen.style.display = 'flex';
+    sessionStorage.setItem('privacy_accepted', '1');
+  }
+  function openPrivacy()  { document.getElementById('privacy-modal').classList.add('open'); }
+  function closePrivacy() { document.getElementById('privacy-modal').classList.remove('open'); }
+
+  if (sessionStorage.getItem('privacy_accepted')) {
+    document.getElementById('privacy-overlay').style.display = 'none';
+    langScreen.style.display = 'flex';
   }
 
   function selectLang(code, label) {
@@ -567,14 +745,22 @@
   }
 
   function resetLang() {
+    conversationHistory  = [];
+    allergyWarningShown  = false;
+    priceDisclaimerShown = false;
     chatArea.classList.remove('active');
     langScreen.style.display = 'flex';
   }
 
   function startChat() {
+    conversationHistory  = [];
+    allergyWarningShown  = false;
+    priceDisclaimerShown = false;
     langScreen.style.display = 'none';
     chatArea.classList.add('active');
     inputEl.placeholder = placeholderByLang[currentLang] || 'Type a question...';
+    quickAlreadyCollapsed = false;
+    quickRow.classList.remove('compact');
     buildQuickButtons();
     var welcome = welcomeByLang[currentLang] || welcomeByLang['en'];
     addMessage(welcome, 'bot');
@@ -584,19 +770,23 @@
     quickRow.innerHTML = '';
     var data = quickByLang[currentLang] || quickByLang['en'];
     quickLabel.textContent = data.label;
+
     data.buttons.forEach(function(item) {
       var btn = document.createElement('button');
       btn.className = 'quick-btn' + (item.primary ? ' primary' : '');
       btn.textContent = item.text;
-      if (item.isMenu) {
-        btn.addEventListener('click', function() {
+
+      btn.addEventListener('click', function() {
+        if (item.isMenu) {
+          var feedback = menuFeedbackByLang[currentLang] || menuFeedbackByLang['it'];
+          addMessage(feedback, 'bot');
           window.open(menuUrl, '_blank');
-        });
-      } else {
-        btn.addEventListener('click', function() {
+          collapseQuickIfNeeded();
+        } else {
           sendMessage(item.text);
-        });
-      }
+        }
+      });
+
       quickRow.appendChild(btn);
     });
   }
@@ -605,7 +795,7 @@
     return text
       .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
       .replace(/\*(.*?)\*/g, '<i>$1</i>')
-      .replace(/\n/g, '<br>')
+      .replace(/\r?\n|\\n/g, '<br>')
       .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   }
 
@@ -631,40 +821,67 @@
     }
   }
 
+  function collapseQuickIfNeeded() {
+    if (!quickAlreadyCollapsed) {
+      quickAlreadyCollapsed = true;
+      quickRow.classList.add('compact');
+    }
+  }
+
   function sendMessage(customText) {
     var text = (customText !== undefined) ? customText : inputEl.value.trim();
-    if (!text) return;
+    if (!text || sendBtn.disabled) return;
 
     if (containsKeyword(text, menuKeywords)) {
+      addMessage(text, 'user');
+      inputEl.value = '';
+      var feedback = menuFeedbackByLang[currentLang] || menuFeedbackByLang['it'];
+      addMessage(feedback, 'bot');
       window.open(menuUrl, '_blank');
+      collapseQuickIfNeeded();
       return;
     }
 
+    collapseQuickIfNeeded();
     addMessage(text, 'user');
     inputEl.value = '';
     inputEl.blur();
 
     if (containsKeyword(text, allergyKeywords)) addAllergyWarning();
-    if (containsKeyword(text, priceKeywords)) addPriceDisclaimer();
+    if (containsKeyword(text, priceKeywords))   addPriceDisclaimer();
 
     setLoading(true);
 
     fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, lang: currentLang })
+      body: JSON.stringify({
+        message: text,
+        lang: currentLang,
+        history: conversationHistory.slice(-MAX_HISTORY)
+      })
     })
     .then(function(res) {
-      if (res.ok) return res.text();
-      return 'Errore ' + res.status + '. Riprova.';
+      return res.text().then(function(body) {
+        return { ok: res.ok, status: res.status, body: body };
+      });
     })
-    .then(function(botReply) {
+    .then(function(result) {
       setLoading(false);
-      addMessage(botReply, 'bot');
+      if (result.ok) {
+        var botReply = parseReply(result.body);
+        conversationHistory.push({ role: 'user',      content: text     });
+        conversationHistory.push({ role: 'assistant', content: botReply });
+        addMessage(botReply, 'bot');
+      } else {
+        var errLang = errorByLang[currentLang] || errorByLang['it'];
+        addMessage(errLang.server.replace('{code}', result.status), 'bot');
+      }
     })
     .catch(function() {
       setLoading(false);
-      addMessage('Errore di connessione. Controlla che n8n sia attivo.', 'bot');
+      var errLang = errorByLang[currentLang] || errorByLang['it'];
+      addMessage(errLang.network, 'bot');
     });
   }
 
