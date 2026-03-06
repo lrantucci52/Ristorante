@@ -1,766 +1,546 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Assistente Benso</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500&display=swap"></noscript>
-  <style>
-    :root {
-      --bg: #f9f5f0; --card: #fff8f2; --border: #d4a96a;
-      --accent: #8b2a2a; --accent-hover: #6e1f1f;
-      --text: #2c1810; --muted: #8a6a50;
-      --user-bubble: #8b2a2a; --bot-bubble: #fff3e8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(160deg, #ede0cf 0%, #f9f5f0 100%);
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; min-height: 100dvh;
-    }
-    .chat-wrapper {
-      width: 100%; max-width: 440px;
-      height: 92vh; height: 92dvh; max-height: 780px;
-      background: var(--card); border-radius: 24px;
-      border: 1.5px solid var(--border);
-      box-shadow: 0 24px 64px rgba(139,42,42,0.13);
-      display: flex; flex-direction: column; overflow: hidden; position: relative;
-    }
-    .header {
-      padding: 14px 16px;
-      background: linear-gradient(135deg, var(--accent), #6e1f1f);
-      color: white; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-    }
-    .header-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3);
-    }
-    .header-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
-    .header-subtitle { font-size: 10px; opacity: 0.75; margin-top: 1px; letter-spacing: 0.03em; }
-    .header-status { font-size: 11px; opacity: 0.85; display: flex; align-items: center; gap: 5px; margin-top: 2px; }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
-    @keyframes pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
-      50%      { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
-    }
-    #lang-badge {
-      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-      color: white; padding: 6px 12px; border-radius: 20px;
-      font-size: 12px; cursor: pointer; white-space: nowrap;
-      font-family: 'Inter', sans-serif; flex-shrink: 0;
-    }
-    .privacy-overlay {
-      position: absolute; inset: 0; z-index: 100;
-      background: rgba(15,10,5,0.7); display: flex; align-items: flex-end;
-      border-radius: 24px; overflow: hidden;
-    }
-    .privacy-banner {
-      width: 100%; background: var(--card); padding: 20px 20px 24px;
-      border-top: 2px solid var(--border); display: flex; flex-direction: column; gap: 12px;
-    }
-    .privacy-banner p { font-size: 12px; color: var(--muted); line-height: 1.6; }
-    .privacy-banner a { color: var(--accent); text-decoration: underline; cursor: pointer; }
-    .privacy-banner strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
-    .privacy-btn {
-      padding: 12px; border-radius: 12px; border: none;
-      background: var(--accent); color: white; font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif; width: 100%;
-    }
-    .privacy-btn:hover { background: var(--accent-hover); }
-    .modal-overlay {
-      position: absolute; inset: 0; z-index: 200;
-      background: rgba(15,10,5,0.75); display: none;
-      align-items: center; justify-content: center; padding: 20px; border-radius: 24px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: var(--card); border-radius: 20px; border: 1.5px solid var(--border);
-      padding: 24px 20px; max-height: 80vh; overflow-y: auto; width: 100%;
-    }
-    .modal-box h2 { font-family: 'Playfair Display', serif; color: var(--accent); font-size: 18px; margin-bottom: 12px; }
-    .modal-box h3 { font-size: 13px; font-weight: 700; color: var(--text); margin: 14px 0 4px; }
-    .modal-box p, .modal-box li { font-size: 12px; color: var(--muted); line-height: 1.7; }
-    .modal-box ul { padding-left: 16px; }
-    .modal-close {
-      width: 100%; margin-top: 20px; padding: 12px;
-      background: var(--accent); color: white; border: none;
-      border-radius: 12px; font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-    }
-    .modal-close:hover { background: var(--accent-hover); }
-    .lang-screen {
-      flex: 1; display: none; flex-direction: column; align-items: center;
-      justify-content: center; padding: 28px 24px; gap: 16px; background: var(--bg);
-      overflow-y: auto;
-    }
-    .lang-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent); text-align: center; font-weight: 700; line-height: 1.3; }
-    .lang-subtitle { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
-    .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
-    .lang-btn {
-      padding: 14px 12px; border-radius: 14px; border: 1.5px solid var(--border);
-      background: white; color: var(--text); font-size: 15px; cursor: pointer;
-      transition: all 0.18s; font-weight: 500; display: flex; align-items: center; gap: 8px;
-      font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent;
-    }
-    .lang-btn:hover, .lang-btn:active { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.03); }
-    .lang-divider { display: flex; align-items: center; gap: 10px; width: 100%; color: var(--muted); font-size: 12px; }
-    .lang-divider::before, .lang-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .lang-other-row { display: flex; gap: 10px; width: 100%; }
-    #lang-other-input {
-      flex: 1; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--border);
-      background: white; font-size: 15px; outline: none; font-family: 'Inter', sans-serif;
-    }
-    #lang-other-input:focus { border-color: var(--accent); }
-    #lang-other-input::placeholder { color: #bfa98c; }
-    .lang-confirm-btn {
-      padding: 12px 20px; border-radius: 12px; border: none;
-      background: var(--accent); color: white; font-size: 14px;
-      font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Inter', sans-serif;
-    }
-    .lang-confirm-btn:hover { background: var(--accent-hover); }
-    .lang-error { font-size: 12px; color: var(--accent); text-align: center; min-height: 16px; }
-    .chat-area { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-    .chat-area.active { display: flex; }
-    .messages {
-      flex: 1; overflow-y: auto; padding: 14px 12px;
-      display: flex; flex-direction: column; gap: 10px;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    }
-    .messages::-webkit-scrollbar { width: 4px; }
-    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    .message {
-      padding: 11px 15px; border-radius: 18px; max-width: 84%;
-      font-size: 14px; line-height: 1.55; animation: fadeUp 0.2s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .user {
-      background: var(--user-bubble); color: white;
-      align-self: flex-end; border-bottom-right-radius: 5px; font-weight: 500;
-    }
-    .bot {
-      background: var(--bot-bubble); color: var(--text);
-      align-self: flex-start; border-bottom-left-radius: 5px;
-      border: 1px solid var(--border); font-family: 'Playfair Display', serif;
-    }
-    .bot b { color: var(--accent); }
-    .bot a { color: var(--accent); text-decoration: underline; word-break: break-all; }
-    .typing {
-      display: none; align-items: center; gap: 5px; padding: 11px 15px;
-      background: var(--bot-bubble); border: 1px solid var(--border);
-      border-radius: 18px; border-bottom-left-radius: 5px;
-      max-width: 70px; align-self: flex-start;
-    }
-    .typing.visible { display: flex; }
-    .t-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
-      animation: bounce 1.2s infinite ease-in-out;
-    }
-    .t-dot:nth-child(2) { animation-delay: 0.2s; }
-    .t-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%,60%,100% { transform: translateY(0); opacity: 0.4; }
-      30%          { transform: translateY(-5px); opacity: 1; }
-    }
-    .info-disclaimer {
-      background: #f0f4ff; border: 1.5px solid #a0b4e0; border-left: 5px solid #4a6fa5;
-      border-radius: 14px; border-bottom-left-radius: 5px; padding: 10px 14px;
-      font-size: 12px; line-height: 1.5; color: #2a3a5c; align-self: flex-start;
-      max-width: 90%; animation: fadeUp 0.2s ease; font-family: 'Inter', sans-serif;
-    }
-    .quick-section {
-      padding: 8px 12px 6px; background: var(--bg);
-      border-top: 1px solid var(--border); flex-shrink: 0;
-    }
-    .quick-label {
-      font-size: 10px; color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.06em; margin-bottom: 4px; display: block;
-    }
-    .quick-row { display: flex; flex-wrap: wrap; gap: 7px; }
-    .quick-row.compact {
-      flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-      white-space: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch;
-    }
-    .quick-row.compact::-webkit-scrollbar { height: 3px; }
-    .quick-row.compact::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
-    .quick-btn {
-      flex-shrink: 0; padding: 8px 15px; border-radius: 999px; font-size: 13px;
-      border: 1.5px solid var(--border); color: var(--muted); background: white;
-      cursor: pointer; transition: all 0.15s; white-space: nowrap;
-      font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    .quick-btn:hover, .quick-btn:active {
-      border-color: var(--accent); color: var(--accent);
-      background: rgba(139,42,42,0.07); transform: scale(1.04);
-    }
-    .quick-btn.primary { background: var(--accent); color: white; border-color: var(--accent); font-weight: 600; }
-    .quick-btn.primary:hover, .quick-btn.primary:active {
-      background: var(--accent-hover); color: white; border-color: var(--accent-hover);
-    }
-    .input-area {
-      padding: 10px 12px 16px; background: var(--bg);
-      border-top: 1px solid var(--border);
-      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
-    }
-    #input {
-      flex: 1; padding: 11px 16px; border-radius: 999px;
-      border: 1.5px solid var(--border); background: white;
-      color: var(--text); font-size: 16px; outline: none;
-      font-family: 'Inter', sans-serif; touch-action: manipulation;
-    }
-    #input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,42,42,0.1); }
-    #input::placeholder { color: #bfa98c; }
-    .send-btn {
-      width: 44px; height: 44px; border-radius: 50%; border: none;
-      background: var(--accent); color: white; font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.1s, background 0.15s; flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .send-btn:hover { background: var(--accent-hover); }
-    .send-btn:active { transform: scale(0.93); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    @media (max-width: 480px) {
-      .chat-wrapper { max-width: 100%; height: 100vh; height: 100dvh; border-radius: 0; }
-      .privacy-overlay { border-radius: 0; }
-      .modal-overlay { border-radius: 0; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Benso &middot; Assistente</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+:root {
+  --wine:#7a1f2e; --wine2:#5c1520; --wine3:#3a0e18; --gold:#c9a252;
+  --cream:#fdf6ee; --cream2:#f5ead8; --cream3:#e8d5bc;
+  --text:#1c0e08; --muted:#8a6545; --muted2:#b8956a;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+body { font-family:'Inter',sans-serif; background:linear-gradient(135deg,#e8d5b8,#fdf6ee); display:flex; align-items:center; justify-content:center; }
+
+/* ── APP ── */
+#app { width:100%; max-width:430px; height:100vh; height:100dvh; background:var(--cream); display:flex; flex-direction:column; position:relative; }
+@media(min-width:480px){ #app { max-height:840px; border-radius:26px; box-shadow:0 20px 80px rgba(60,14,24,.25); } }
+
+/* ── HEADER ── */
+#hdr { flex-shrink:0; background:linear-gradient(150deg,var(--wine3),var(--wine) 70%,#a02535); padding:15px 16px 13px; display:flex; align-items:center; gap:13px; }
+#hdr-icon { width:48px; height:48px; border-radius:50%; flex-shrink:0; background:rgba(255,255,255,.13); border:1.5px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; font-size:25px; }
+#hdr-body { flex:1; min-width:0; }
+#hdr-name { font-family:'Playfair Display',serif; font-size:16.5px; font-weight:700; color:#fff; line-height:1.2; }
+#hdr-sub  { font-size:10px; color:rgba(255,255,255,.6); margin-top:2px; letter-spacing:.4px; }
+#hdr-status { display:flex; align-items:center; gap:5px; margin-top:4px; }
+.dot { width:6px; height:6px; border-radius:50%; background:#4ade80; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)} 50%{box-shadow:0 0 0 5px rgba(74,222,128,0)} }
+#hdr-status span { font-size:10px; color:rgba(255,255,255,.7); }
+#lang-btn { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; padding:7px 12px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; flex-shrink:0; transition:background .2s; }
+#lang-btn:hover { background:rgba(255,255,255,.25); }
+
+/* ── TABBAR ── */
+#tabbar { flex-shrink:0; display:flex; background:#fff; border-bottom:1px solid var(--cream3); }
+.tb { flex:1; padding:11px 0 9px; background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:4px; transition:color .2s; position:relative; }
+.tb svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.tb::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:2.5px; background:var(--wine); border-radius:2px 2px 0 0; transition:width .3s; }
+.tb.on { color:var(--wine); }
+.tb.on::after { width:44px; }
+
+/* ── CONTENT (chat + menu) ── */
+#content { flex:1; overflow:hidden; position:relative; }
+.screen { position:absolute; top:0; left:0; right:0; bottom:0; display:none; flex-direction:column; overflow:hidden; background:var(--cream); }
+.screen.on { display:flex; }
+
+/* ═══════════════════════════════════════════
+   FIXED OVERLAYS — position:fixed, z-index high
+   These are OUTSIDE #app layout, cover full viewport
+   ═══════════════════════════════════════════ */
+
+/* ── PRIVACY ── */
+#s-priv {
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(10,4,2,.72);
+  display:none;
+  flex-direction:column;
+  justify-content:flex-end;   /* card sticks to BOTTOM */
+  align-items:stretch;
+}
+#s-priv.on { display:flex; }
+
+.priv-card {
+  background:var(--cream); border-top:3px solid var(--gold); border-radius:22px 22px 0 0;
+  padding:26px 22px 40px; display:flex; flex-direction:column; gap:18px;
+  animation:slideup .3s cubic-bezier(.22,1,.36,1);
+  max-width:430px; width:100%; margin:0 auto;
+}
+@keyframes slideup { from { transform:translateY(60px); opacity:0; } to { transform:none; opacity:1; } }
+.priv-title { font-family:'Playfair Display',serif; font-size:19px; color:var(--wine); font-weight:700; }
+.priv-body  { font-size:13.5px; color:var(--muted); line-height:1.75; }
+.priv-body b { color:var(--text); }
+.priv-link  { color:var(--wine); text-decoration:underline; cursor:pointer; }
+.priv-btn   {
+  padding:16px; border-radius:14px; border:none;
+  background:linear-gradient(135deg,var(--wine),var(--wine2));
+  color:#fff; font-size:15px; font-weight:600; cursor:pointer;
+  font-family:'Inter',sans-serif; box-shadow:0 6px 20px rgba(122,31,46,.4);
+  transition:opacity .15s;
+}
+.priv-btn:active { opacity:.85; }
+
+/* ── MODAL ── */
+#s-modal {
+  position:fixed; inset:0; z-index:10000;
+  background:rgba(10,4,2,.75);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#s-modal.on { display:flex; }
+.mbox { background:var(--cream); border-radius:22px; border:1.5px solid var(--gold); padding:26px 22px; max-height:82vh; overflow-y:auto; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,.45); }
+.mbox h2 { font-family:'Playfair Display',serif; color:var(--wine); font-size:19px; margin-bottom:14px; }
+.mbox h3 { font-size:12px; font-weight:700; color:var(--text); margin:14px 0 4px; text-transform:uppercase; letter-spacing:.5px; }
+.mbox p, .mbox li { font-size:12.5px; color:var(--muted); line-height:1.7; }
+.mbox ul { padding-left:16px; }
+.mbox-close { width:100%; margin-top:20px; padding:13px; border-radius:14px; border:none; background:linear-gradient(135deg,var(--wine),var(--wine2)); color:#fff; font-size:14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+
+/* ── LANG ── */
+#s-lang {
+  position:fixed; inset:0; z-index:8000;
+  background:var(--cream);
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  padding:28px 22px; gap:18px; overflow-y:auto;
+}
+#s-lang.on { display:flex; }
+.lang-h  { font-family:'Playfair Display',serif; font-size:24px; color:var(--wine); text-align:center; font-weight:700; }
+.lang-s  { font-size:13.5px; color:var(--muted); text-align:center; line-height:1.6; }
+.lang-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:400px; }
+.lo { padding:14px 10px; border-radius:16px; border:1.5px solid var(--cream3); background:#fff; color:var(--text); font-size:14.5px; cursor:pointer; font-weight:500; display:flex; align-items:center; gap:9px; font-family:'Inter',sans-serif; box-shadow:0 2px 8px rgba(0,0,0,.06); transition:all .18s; }
+.lo:hover, .lo:active { background:var(--wine); color:#fff; border-color:var(--wine); }
+.divider { display:flex; align-items:center; gap:10px; width:100%; max-width:400px; color:var(--muted2); font-size:12px; }
+.divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--cream3); }
+.other-row { display:flex; gap:8px; width:100%; max-width:400px; }
+.oi { flex:1; padding:12px 15px; border-radius:13px; border:1.5px solid var(--cream3); background:#fff; font-size:14px; outline:none; font-family:'Inter',sans-serif; color:var(--text); }
+.oi:focus { border-color:var(--wine); box-shadow:0 0 0 3px rgba(122,31,46,.1); }
+.oi::placeholder { color:var(--muted2); }
+.ob { padding:12px 16px; border-radius:13px; border:none; background:var(--wine); color:#fff; font-size:14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+#lang-err { font-size:12px; color:var(--wine); text-align:center; min-height:16px; }
+
+/* ── CHAT ── */
+#s-chat { overflow:hidden; }
+#msgs { flex:1; overflow-y:auto; padding:14px 13px; display:flex; flex-direction:column; gap:11px; }
+#msgs::-webkit-scrollbar { width:3px; }
+#msgs::-webkit-scrollbar-thumb { background:var(--cream3); border-radius:4px; }
+.bubble { max-width:82%; padding:11px 16px; border-radius:20px; font-size:14px; line-height:1.6; word-break:break-word; animation:pop .22s ease; }
+@keyframes pop { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:none} }
+.bubble.bot { background:#fff; color:var(--text); align-self:flex-start; border-bottom-left-radius:4px; border:1px solid rgba(201,162,82,.3); box-shadow:0 2px 10px rgba(0,0,0,.07); font-family:'Playfair Display',serif; }
+.bubble.bot b { color:var(--wine); }
+.bubble.bot a { color:var(--wine); text-decoration:underline; }
+.bubble.usr { background:linear-gradient(135deg,var(--wine),var(--wine2)); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; font-family:'Inter',sans-serif; font-weight:500; box-shadow:0 4px 16px rgba(122,31,46,.3); }
+#ty { align-self:flex-start; background:#fff; border:1px solid rgba(201,162,82,.3); box-shadow:0 2px 10px rgba(0,0,0,.06); border-radius:20px; border-bottom-left-radius:4px; padding:13px 17px; display:none; gap:5px; align-items:center; }
+.td { width:7px; height:7px; border-radius:50%; background:var(--muted2); animation:td 1.2s infinite; }
+.td:nth-child(2){animation-delay:.2s} .td:nth-child(3){animation-delay:.4s}
+@keyframes td { 0%,60%,100%{transform:translateY(0);opacity:.35} 30%{transform:translateY(-6px);opacity:1} }
+.disc { align-self:flex-start; max-width:88%; background:#eef3ff; border-left:4px solid #5a7fd4; border-radius:12px; border-bottom-left-radius:3px; padding:10px 14px; font-size:12px; color:#2a3a70; line-height:1.55; animation:pop .22s ease; }
+#chips-wrap{flex-shrink:0;background:var(--cream2);border-top:1px solid var(--cream3);padding:8px 12px 7px;overflow:hidden;transition:max-height .3s ease,opacity .25s ease,padding .3s ease;}
+#chips-wrap.cmp{padding-top:5px;padding-bottom:5px;}
+#chips-wrap.hidden{max-height:0 !important;padding-top:0;padding-bottom:0;opacity:0;pointer-events:none;border-top:none;}
+#chips-lbl{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block;transition:all .2s;}
+#chips-wrap.cmp #chips-lbl{display:none;}
+#chips{display:flex;flex-wrap:wrap;gap:7px;}
+#chips-wrap.cmp #chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+#chips-wrap.cmp #chips::-webkit-scrollbar{height:3px;}
+#chips-wrap.cmp #chips::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:99px;}
+.chip { flex-shrink:0; padding:8px 14px; border-radius:99px; font-size:13px; border:1.5px solid var(--cream3); color:var(--muted); background:#fff; cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif; transition:all .15s; }
+.chip:hover, .chip:active { border-color:var(--wine); color:var(--wine); background:rgba(122,31,46,.05); }
+#ibar { flex-shrink:0; display:flex; gap:9px; align-items:center; padding:10px 13px 18px; background:var(--cream2); border-top:1px solid var(--cream3); }
+#msg-in { flex:1; padding:12px 17px; border-radius:30px; border:1.5px solid var(--cream3); background:#fff; color:var(--text); font-size:16px; outline:none; font-family:'Inter',sans-serif; transition:.2s; }
+#msg-in:focus { border-color:var(--wine); box-shadow:0 0 0 3px rgba(122,31,46,.1); }
+#msg-in::placeholder { color:var(--muted2); }
+#btn-send { width:46px; height:46px; border-radius:50%; border:none; background:linear-gradient(135deg,var(--wine),var(--wine2)); color:#fff; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(122,31,46,.4); transition:.15s; }
+#btn-send:hover { transform:scale(1.05); }
+#btn-send:active { transform:scale(.92); }
+#btn-send:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+#btn-send svg { width:17px; height:17px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ── MENU ── */
+#s-menu { overflow:hidden; }
+#mb { flex:1; overflow-y:auto; padding:12px 12px 20px; }
+#mb::-webkit-scrollbar { width:3px; }
+#mb::-webkit-scrollbar-thumb { background:var(--cream3); border-radius:4px; }
+.anote { background:linear-gradient(135deg,#fffaf0,#fff8e8); border:1.5px solid var(--gold); border-radius:15px; padding:12px 15px; margin-bottom:11px; font-size:11.5px; color:var(--muted); line-height:1.9; }
+.anote strong { display:block; font-family:'Playfair Display',serif; color:var(--wine); font-size:13px; margin-bottom:5px; }
+.cbl { margin-bottom:8px; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+.chdr { background:linear-gradient(135deg,var(--wine3),var(--wine)); padding:13px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; }
+.chdrl { display:flex; align-items:center; gap:10px; }
+.cem { font-size:18px; }
+.ctit { font-family:'Playfair Display',serif; color:#fff; font-size:14.5px; font-weight:600; }
+.ccnt { font-size:10.5px; color:rgba(255,255,255,.55); margin-top:1px; }
+.carr { color:rgba(255,255,255,.65); font-size:11px; transition:.3s; }
+.chdr.open .carr { transform:rotate(180deg); }
+.cbdy { display:none; background:#fff; }
+.cbdy.open { display:block; }
+.dish { padding:11px 15px; border-bottom:1px solid #f5ead8; display:flex; align-items:flex-start; gap:11px; }
+.dish:last-child { border:none; }
+.dsl { flex:1; min-width:0; }
+.dsn { font-size:13px; font-weight:600; color:var(--text); line-height:1.3; }
+.dsd { font-size:11.5px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.dsa { display:inline-block; font-size:10.5px; color:#9a5800; background:#fff4e0; border-radius:6px; padding:2px 7px; margin-top:4px; border:1px solid #f0d090; font-style:italic; }
+.dsp { font-size:14px; font-weight:700; color:var(--wine); white-space:nowrap; flex-shrink:0; padding-top:1px; font-family:'Playfair Display',serif; }
+</style>
 </head>
 <body>
-<div class="chat-wrapper">
 
-  <div class="header">
-    <div class="header-avatar">🍷</div>
-    <div style="flex:1; min-width:0;">
-      <div class="header-name">Benso Ristorante</div>
-      <div class="header-subtitle">Enoteca Bistrot · Via Cavour 215, Roma</div>
-      <div class="header-status"><div class="status-dot"></div> Online</div>
+<div id="s-priv">
+  <div class="priv-card">
+    <div class="priv-title">&#127863; Benvenuto da Benso</div>
+    <div class="priv-body">
+      Questa chat &egrave; gestita da un <b>assistente virtuale AI</b>.
+      Le conversazioni vengono elaborate per risponderti e non conservate oltre 30&nbsp;giorni.<br><br>
+      Continuando accetti il trattamento dei dati descritto nella nostra
+      <span class="priv-link" id="btn-priv-link">Privacy Policy</span>.
+      Le informazioni su piatti e prezzi sono <b>indicative</b>.
     </div>
-    <button id="lang-badge" onclick="resetLang()">🌍 IT</button>
+    <button class="priv-btn" id="btn-accept">Ho capito, continua &rsaquo;</button>
   </div>
-
-  <div class="privacy-overlay" id="privacy-overlay">
-    <div class="privacy-banner">
-      <div>
-        <strong>🍷 Benvenuto da Benso Ristorante</strong>
-        <p>Prima di continuare, ti informiamo che questa chat è gestita da un <b>assistente virtuale automatico</b> (AI). Le conversazioni vengono elaborate per risponderti e non vengono conservate oltre 30 giorni.<br><br>
-        Continuando accetti il trattamento dei dati come descritto nella nostra <a onclick="openPrivacy()">Privacy Policy</a>. Le informazioni su piatti e prezzi sono indicative e potrebbero non essere aggiornate in tempo reale.</p>
-      </div>
-      <button class="privacy-btn" onclick="acceptPrivacy()">Ho capito, continua</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="privacy-modal">
-    <div class="modal-box">
-      <h2>🔒 Privacy Policy</h2>
-      <h3>Titolare del trattamento</h3>
-      <p>Benso Ristorante Enoteca Bistrot — Via Cavour 215, 00184 Roma.<br>Contatti: <b>info@bensoristoranteroma.com</b> · +39 06 4893 0947</p>
-      <h3>Responsabile del trattamento</h3>
-      <p>Il servizio tecnico è fornito da un soggetto terzo (fornitore del chatbot) che opera come responsabile del trattamento ai sensi dell'art. 28 GDPR.</p>
-      <h3>Dati trattati</h3>
-      <ul>
-        <li>Messaggi inviati durante la conversazione</li>
-        <li>Lingua selezionata</li>
-        <li>Indirizzo IP (anonimizzato)</li>
-      </ul>
-      <h3>Finalità</h3>
-      <p>I dati sono utilizzati esclusivamente per fornire risposte automatiche relative al menu del ristorante.</p>
-      <h3>Conservazione</h3>
-      <p>I dati delle conversazioni vengono eliminati automaticamente entro <b>30 giorni</b> dalla raccolta.</p>
-      <h3>Diritti dell'interessato</h3>
-      <p>Ai sensi degli artt. 15-22 GDPR hai diritto di accesso, rettifica, cancellazione e opposizione. Per esercitare i tuoi diritti scrivi a <b>info@bensoristoranteroma.com</b>.</p>
-      <h3>Base giuridica</h3>
-      <p>Il trattamento si basa sul legittimo interesse (art. 6(1)(f) GDPR) limitato alla fornitura del servizio di assistenza al menu.</p>
-      <h3>Allergeni (Reg. UE 1169/2011)</h3>
-      <p>Le informazioni sugli allergeni sono <b>indicative</b>. La cucina <b>non è certificata per celiaci</b>. Per informazioni vincolanti, rivolgersi sempre al personale prima di ordinare.</p>
-      <button class="modal-close" onclick="closePrivacy()">Chiudi</button>
-    </div>
-  </div>
-
-  <div class="lang-screen" id="lang-screen">
-    <div class="lang-title">In che lingua preferisci? 🌍</div>
-    <div class="lang-subtitle">Scegli la tua lingua o scrivila tu stesso</div>
-    <div class="lang-grid">
-      <button class="lang-btn" onclick="selectLang('it','IT')">🇮🇹 Italiano</button>
-      <button class="lang-btn" onclick="selectLang('en','EN')">🇺🇸 English</button>
-      <button class="lang-btn" onclick="selectLang('es','ES')">🇪🇸 Español</button>
-      <button class="lang-btn" onclick="selectLang('fr','FR')">🇫🇷 Français</button>
-      <button class="lang-btn" onclick="selectLang('de','DE')">🇩🇪 Deutsch</button>
-      <button class="lang-btn" onclick="selectLang('zh','ZH')">🇨🇳 中文</button>
-    </div>
-    <div class="lang-divider">altra lingua</div>
-    <div class="lang-other-row">
-      <input type="text" id="lang-other-input" placeholder="Es: Português, عربي, 日本語..."
-             autocomplete="off" maxlength="30"
-             onkeydown="if(event.key==='Enter') selectCustomLang()">
-      <button class="lang-confirm-btn" onclick="selectCustomLang()">Conferma</button>
-    </div>
-    <div class="lang-error" id="lang-error"></div>
-  </div>
-
-  <div class="chat-area" id="chat-area">
-    <div class="messages" id="messages">
-      <div class="typing" id="typing">
-        <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
-      </div>
-    </div>
-    <div class="quick-section">
-      <span class="quick-label" id="quick-label">Chiedimi subito</span>
-      <div class="quick-row" id="quick-row"></div>
-    </div>
-    <div class="input-area">
-      <input type="text" id="input" placeholder="Scrivi una domanda..."
-             autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text">
-      <button class="send-btn" id="send-btn" aria-label="Invia">&#10148;</button>
-    </div>
-  </div>
-
 </div>
 
+<div id="s-modal">
+  <div class="mbox">
+    <h2>&#128274; Privacy Policy</h2>
+    <h3>Titolare</h3>
+    <p>Benso Ristorante Enoteca Bistrot &middot; Via Cavour 215, 00184 Roma<br>
+    <b>info@bensoristoranteroma.com</b> &middot; +39&nbsp;06&nbsp;4893&nbsp;0947</p>
+    <h3>Dati trattati</h3>
+    <ul><li>Messaggi della conversazione</li><li>Lingua selezionata</li><li>IP anonimizzato</li></ul>
+    <h3>Finalit&agrave;</h3><p>Risposta automatica su menu e servizi del ristorante.</p>
+    <h3>Conservazione</h3><p>Conversazioni eliminate entro <b>30 giorni</b>.</p>
+    <h3>Diritti (artt. 15&ndash;22 GDPR)</h3><p>Scrivi a <b>info@bensoristoranteroma.com</b></p>
+    <h3>Allergeni (Reg. UE 1169/2011)</h3>
+    <p>Informazioni <b>indicative</b>. Cucina <b>non certificata per celiaci</b>. Confermare sempre col personale.</p>
+    <button class="mbox-close" id="btn-modal-close">Chiudi</button>
+  </div>
+</div>
+
+<div id="s-lang">
+  <div class="lang-h">In che lingua preferisci? &#127757;</div>
+  <div class="lang-s">Scegli la tua lingua per continuare</div>
+  <div class="lang-grid">
+    <button class="lo" data-code="it" data-label="IT">&#127470;&#127481; Italiano</button>
+    <button class="lo" data-code="en" data-label="EN">&#127482;&#127480; English</button>
+    <button class="lo" data-code="es" data-label="ES">&#127466;&#127480; Espa&ntilde;ol</button>
+    <button class="lo" data-code="fr" data-label="FR">&#127467;&#127479; Fran&ccedil;ais</button>
+    <button class="lo" data-code="de" data-label="DE">&#127465;&#127466; Deutsch</button>
+    <button class="lo" data-code="zh" data-label="ZH">&#127464;&#127475; &#20013;&#25991;</button>
+  </div>
+  <div class="divider">altra lingua</div>
+  <div class="other-row">
+    <input class="oi" id="inp-other" placeholder="Es: Portugu&ecirc;s, &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;&hellip;" maxlength="30" autocomplete="off">
+    <button class="ob" id="btn-other-ok">OK</button>
+  </div>
+  <div id="lang-err"></div>
+</div>
+
+<div id="app">
+  <div id="hdr">
+    <div id="hdr-icon">&#127863;</div>
+    <div id="hdr-body">
+      <div id="hdr-name">Benso Ristorante</div>
+      <div id="hdr-sub">Enoteca Bistrot &middot; Via Cavour 215, Roma</div>
+      <div id="hdr-status"><div class="dot"></div><span>Online &middot; Assistente AI</span></div>
+    </div>
+    <button id="lang-btn">&#127757; IT</button>
+  </div>
+  <div id="tabbar">
+    <button class="tb on" id="tb-chat">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span id="tl-chat">Chat</span>
+    </button>
+    <button class="tb" id="tb-menu">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <span id="tl-menu">Men&ugrave;</span>
+    </button>
+  </div>
+  <div id="content">
+    <div class="screen" id="s-chat">
+      <div id="msgs">
+        <div id="ty"><div class="td"></div><div class="td"></div><div class="td"></div></div>
+      </div>
+      <div id="chips-wrap">
+        <span id="chips-lbl">Chiedimi subito</span>
+        <div id="chips"></div>
+      </div>
+      <div id="ibar">
+        <button id="chips-btn" title="Suggerimenti">&#128161;</button>
+        <input id="msg-in" placeholder="Scrivi una domanda&hellip;" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button id="btn-send">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="screen" id="s-menu">
+      <div id="menu-topbar">
+        <span id="menu-topbar-lbl">&#127869;&#65039; Men&ugrave; &mdash; 127 piatti</span>
+        <button id="menu-lang-toggle">EN</button>
+      </div>
+      <div id="mb"></div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="d-menu-it">{"☕ Caffetteria": [{"n": "Espresso", "a": "", "p": "2,00 €", "d": "Caffè espresso classico"}, {"n": "Espresso con panna", "a": "Latte", "p": "3,00 €", "d": "Con ciuffo di panna montata"}, {"n": "Espresso decaffeinato", "a": "", "p": "3,00 €", "d": "Espresso senza caffeina"}, {"n": "Espresso doppio", "a": "", "p": "4,00 €", "d": "Doppia dose"}, {"n": "Caffe shakerato", "a": "", "p": "4,00 €", "d": "Shakerato con ghiaccio"}, {"n": "Cappuccino", "a": "Latte", "p": "4,00 €", "d": "Con latte montato"}, {"n": "Caffe americano", "a": "", "p": "3,00 €", "d": "Allungato con acqua calda"}, {"n": "Irish coffee", "a": "Latte", "p": "8,00 €", "d": "Con whiskey e panna montata"}, {"n": "Latte macchiato", "a": "Latte", "p": "4,00 €", "d": "Latte caldo con espresso"}, {"n": "Cioccolata calda", "a": "Latte", "p": "5,00 €", "d": "Cremosa e avvolgente"}, {"n": "Cioccolata calda con panna", "a": "Latte", "p": "6,00 €", "d": "Con panna montata"}, {"n": "Te, camomilla e infusi", "a": "", "p": "4,00 €", "d": "Selezione di infusi caldi"}], "🍳 Colazione Salata": [{"n": "Uova strapazzate con bacon", "a": "Uova, Latte", "p": "9,00 €", "d": "Con bacon croccante"}, {"n": "Omelette prosciutto e formaggio", "a": "Uova, Latte", "p": "12,00 €", "d": "Farcita con prosciutto cotto e formaggio"}, {"n": "Uovo poche con spinaci", "a": "Glutine, Uova, Latte, Senape, Soia", "p": "8,00 €", "d": "Uovo in camicia su spinaci saltati"}, {"n": "Uovo poche con prosciutto", "a": "Glutine, Uova, Latte, Senape, Soia", "p": "8,00 €", "d": "Con prosciutto crudo"}, {"n": "Uovo poche spinaci e salmone", "a": "Glutine, Uova, Latte, Pesce, Senape, Soia", "p": "10,00 €", "d": "Con spinaci e salmone affumicato"}, {"n": "Avocado toast", "a": "Glutine, Uova, Pesce, Soia, Frutta a guscio", "p": "12,00 €", "d": "Pane tostato, avocado, uovo e salmone"}, {"n": "Toast prosciutto e formaggio", "a": "Glutine, Latte", "p": "6,00 €", "d": "Toast classico con prosciutto cotto"}, {"n": "Club sandwich", "a": "Glutine, Uova, Latte", "p": "12,00 €", "d": "Prosciutto, pollo, uovo, insalata, pomodoro, maionese"}], "🥐 Colazione Dolce": [{"n": "Pancakes caramello salato e banana", "a": "Glutine, Uova, Latte", "p": "12,00 €", "d": "Con caramello salato, banana e cacao"}, {"n": "Pancakes sciroppo acero e frutti di bosco", "a": "Glutine, Uova, Latte", "p": "10,00 €", "d": "Con sciroppo, frutti di bosco e panna"}, {"n": "Pancakes frutti di bosco e gelato", "a": "Glutine, Uova, Latte", "p": "10,00 €", "d": "Con frutti di bosco, gelato e panna"}, {"n": "Macedonia di frutta fresca", "a": "", "p": "7,00 €", "d": "Selezione di frutta di stagione"}, {"n": "Banana split", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "10,00 €", "d": "Banana, gelato, panna e nocciole"}, {"n": "Torta al cioccolato", "a": "Glutine, Uova, Latte", "p": "7,00 €", "d": "Fondente, fatta in casa"}, {"n": "Yogurt con cereali e frutta", "a": "Glutine, Latte, Frutta a guscio", "p": "10,00 €", "d": "Yogurt bianco, mix cereali e frutta fresca"}], "🌅 Colazione Completa": [{"n": "Menu Breakfast completo", "a": "Glutine, Uova, Latte", "p": "16,00 €", "d": "Uova, bacon, toast, burro, marmellata, caffe, succo"}], "🥗 Antipasti": [{"n": "Bruschette al pomodoro 2 pz", "a": "Glutine", "p": "6 €", "d": "Pomodoro fresco, aglio e basilico"}, {"n": "Tris di bruschette", "a": "Glutine, Pesce, Latte", "p": "12 €", "d": "Tre bruschette con guarnizioni differenti"}, {"n": "Misto di formaggi italiani", "a": "Latte", "p": "14 €", "d": "Con miele e confettura"}, {"n": "Caprese alla genovese", "a": "Latte, Frutta a guscio", "p": "14 €", "d": "Mozzarella, pomodoro, basilico e pesto"}, {"n": "Bufala con prosciutto", "a": "Latte", "p": "14 €", "d": "Mozzarella di bufala con prosciutto crudo"}, {"n": "Burrata con alici e pomodori secchi", "a": "Latte, Pesce, Sedano", "p": "14 €", "d": "Burrata fresca con alici e pomodori secchi"}, {"n": "Tartare di manzo con tartufo e burrata", "a": "Latte", "p": "18 €", "d": "Tartare, tartufo fresco e burrata"}, {"n": "Carciofi alla romana 2 pz", "a": "", "p": "12 €", "d": "Con mentuccia e aglio"}, {"n": "Carpaccio di manzo rucola e grana", "a": "Latte", "p": "16 €", "d": "Con rucola e scaglie di grana"}, {"n": "Saute di cozze al vino bianco", "a": "Glutine, Molluschi, Pesce", "p": "16 €", "d": "Cozze al vino bianco con crostini"}, {"n": "Grande antipasto", "a": "Glutine, Uova, Soia, Latte, Frutta a guscio, Sedano, Sesamo", "p": "30 €", "d": "Ampio antipasto misto della casa"}], "🍝 Pasta": [{"n": "Rigatoni alla carbonara", "a": "Glutine, Uova, Latte", "p": "14 €", "d": "Guanciale, uovo, pecorino e pepe nero"}, {"n": "Rigatoni all'amatriciana", "a": "Glutine, Latte, Sedano", "p": "14 €", "d": "Guanciale, pomodoro San Marzano e pecorino"}, {"n": "Tonnarelli alla gricia", "a": "Glutine, Uova, Latte", "p": "14 €", "d": "Guanciale, pecorino e pepe nero"}, {"n": "Tonnarelli cacio e pepe nel cestino di grana", "a": "Glutine, Uova, Latte", "p": "16 €", "d": "Serviti nel cestino di grana"}, {"n": "Fettuccine Alfredo", "a": "Glutine, Uova, Latte", "p": "15 €", "d": "Burro e parmigiano"}, {"n": "Fettuccine alla bolognese", "a": "Glutine, Uova, Latte, Sedano", "p": "16 €", "d": "Ragu bolognese classico"}, {"n": "Fettuccine carciofi guanciale e pecorino", "a": "Glutine, Uova, Latte", "p": "16 €", "d": "Con guanciale croccante"}, {"n": "Fettuccine cozze e pecorino", "a": "Glutine, Uova, Latte, Molluschi", "p": "15 €", "d": "Cozze fresche e pecorino romano"}, {"n": "Spaghetti alle vongole e bottarga", "a": "Glutine, Molluschi", "p": "18 €", "d": "Vongole fresche e bottarga di muggine"}, {"n": "Spaghetti ai frutti di mare", "a": "Glutine, Crostacei, Molluschi", "p": "23 €", "d": "Mix di frutti di mare freschi"}, {"n": "Spaghetti con polpette", "a": "Glutine, Uova, Latte, Sedano", "p": "17 €", "d": "Polpette di manzo al sugo"}, {"n": "Lasagna al ragu di manzo", "a": "Glutine, Uova, Latte, Sedano", "p": "15 €", "d": "Con besciamella"}, {"n": "Ravioli di burrata con crema di pistacchio", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "16 €", "d": "Con stracciatella"}, {"n": "Ravioli di burrata al pomodoro", "a": "Glutine, Uova, Latte, Sedano", "p": "14 €", "d": "Con stracciatella"}, {"n": "Gnocchi al pesto di basilico", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "15 €", "d": "Con pomodori confit"}, {"n": "Gnocchi ai quattro formaggi", "a": "Glutine, Uova, Latte", "p": "14 €", "d": "Crema ai quattro formaggi"}, {"n": "Aggiunta burrata", "a": "Latte", "p": "+5 €", "d": "Burrata fresca"}, {"n": "Aggiunta tartufo fresco", "a": "", "p": "+7 €", "d": "Tartufo fresco grattugiato"}], "🍲 Zuppe e Risotti": [{"n": "Risotto ai funghi porcini e tartufo", "a": "Glutine, Uova, Soia, Latte, Frutta a guscio, Sesamo", "p": "20 €", "d": "Cremoso con porcini e tartufo fresco"}, {"n": "Risotto ai frutti di mare", "a": "Crostacei, Molluschi", "p": "25 €", "d": "Mix di frutti di mare freschi"}, {"n": "Zuppa di pesce", "a": "Glutine, Crostacei, Pesce, Molluschi", "p": "25 €", "d": "Ricca di pesce fresco e frutti di mare"}], "🐟 Pesce e Crostacei": [{"n": "Spaghetti alle vongole e bottarga", "a": "Glutine, Molluschi", "p": "18 €", "d": "Vongole fresche e bottarga di muggine"}, {"n": "Spaghetti ai frutti di mare", "a": "Glutine, Crostacei, Molluschi", "p": "23 €", "d": "Mix di frutti di mare freschi"}, {"n": "Fettuccine cozze e pecorino", "a": "Glutine, Uova, Latte, Molluschi", "p": "15 €", "d": "Cozze fresche e pecorino romano"}, {"n": "Zuppa di pesce", "a": "Glutine, Crostacei, Pesce, Molluschi", "p": "25 €", "d": "Ricca di pesce fresco e frutti di mare"}, {"n": "Risotto ai frutti di mare", "a": "Crostacei, Molluschi", "p": "25 €", "d": "Mix di frutti di mare freschi"}, {"n": "Frittura di calamari e gamberi", "a": "Glutine, Crostacei, Molluschi", "p": "20 €", "d": "Croccante, salsa marinara +4 euro"}, {"n": "Trancio di salmone al forno", "a": "Pesce, Sesamo", "p": "24 €", "d": "Con pomodorini, olive e capperi"}, {"n": "Spigola al forno con patate", "a": "Pesce", "p": "7 euro/100g", "d": "Spigola intera al forno con patate"}], "🍕 Pizza": [{"n": "Margherita", "a": "Glutine, Latte, Sedano", "p": "9 €", "d": "Pomodoro, fior di latte, basilico"}, {"n": "Napoletana", "a": "Glutine, Pesce, Latte, Sedano", "p": "11 €", "d": "Pomodoro, mozzarella, acciughe, capperi"}, {"n": "Prosciutto", "a": "Glutine, Latte, Sedano", "p": "11 €", "d": "Pomodoro, mozzarella, prosciutto cotto"}, {"n": "Funghi e prosciutto", "a": "Glutine, Latte, Sedano", "p": "12 €", "d": "Pomodoro, mozzarella, funghi, prosciutto"}, {"n": "Capricciosa", "a": "Glutine, Uova, Latte", "p": "13 €", "d": "Prosciutto, funghi, olive, carciofi, uovo"}, {"n": "Diavola", "a": "Glutine, Latte, Sedano", "p": "13 €", "d": "Pomodoro, mozzarella, salame piccante"}, {"n": "Vegetariana", "a": "Glutine, Latte, Sedano", "p": "12 €", "d": "Pomodoro, mozzarella, verdure grigliate"}, {"n": "Tonno e cipolla", "a": "Glutine, Pesce, Latte, Sedano", "p": "12 €", "d": "Pomodoro, mozzarella, tonno, cipolla"}, {"n": "4 Formaggi", "a": "Glutine, Latte", "p": "14 €", "d": "Mozzarella, gorgonzola, provola, parmigiano"}, {"n": "Boscaiola", "a": "Glutine, Latte, Sedano", "p": "14 €", "d": "Mozzarella, salsiccia, funghi porcini"}, {"n": "Mortadella e pistacchio", "a": "Glutine, Latte, Frutta a guscio", "p": "15 €", "d": "Mozzarella, mortadella, crema di pistacchio"}, {"n": "Pizza bufalina", "a": "Glutine, Pesce, Latte", "p": "12 €", "d": "Pomodoro, mozzarella di bufala, acciughe"}, {"n": "Pizza burrata e salmone", "a": "Glutine, Crostacei, Latte, Molluschi", "p": "16 €", "d": "Base bianca, burrata, salmone affumicato"}, {"n": "Pizza salsiccia provola e patate", "a": "Glutine, Latte", "p": "16 €", "d": "Base bianca, salsiccia, provola, patate"}], "🥩 Secondi": [{"n": "Filetto alla griglia", "a": "", "p": "28 €", "d": "Filetto di manzo alla griglia"}, {"n": "Filetto di manzo ai funghi porcini", "a": "Glutine, Latte", "p": "33 €", "d": "Con crema di funghi porcini"}, {"n": "Tagliata di manzo rucola e grana", "a": "Latte", "p": "26 €", "d": "Con rucola, pachino e grana"}, {"n": "Hamburger Benso", "a": "Glutine, Latte", "p": "15 €", "d": "Manzo con salsa della casa"}, {"n": "Saltimbocca alla romana", "a": "Glutine, Latte", "p": "16 €", "d": "Vitello con prosciutto crudo e salvia"}, {"n": "Pollo alla cacciatora", "a": "Glutine, Latte, Sedano", "p": "16 €", "d": "Con olive, capperi e pomodoro"}, {"n": "Pollo alla romana", "a": "Glutine, Latte, Sedano", "p": "16 €", "d": "Con peperoni e pomodoro"}, {"n": "Petto di pollo ai 4 formaggi", "a": "Glutine, Latte", "p": "15 €", "d": "Gratinato ai quattro formaggi"}, {"n": "Polpette al sugo 5 pz", "a": "Glutine, Uova, Latte, Sedano", "p": "14 €", "d": "Polpette di manzo in salsa di pomodoro"}], "🥗 Contorni": [{"n": "Patatine fritte", "a": "Glutine", "p": "7 €", "d": "Croccanti"}, {"n": "Patate arrosto", "a": "", "p": "7 €", "d": "Al forno con rosmarino"}, {"n": "Verdure grigliate", "a": "", "p": "7 €", "d": "Misto di stagione"}, {"n": "Spinaci", "a": "", "p": "7 €", "d": "Saltati con aglio e olio"}, {"n": "Cicoria ripassata", "a": "", "p": "7 €", "d": "Con aglio, olio e peperoncino"}, {"n": "Carciofo alla romana", "a": "", "p": "7 €", "d": "Con mentuccia e aglio"}], "🥗 Insalate": [{"n": "Insalata mista", "a": "", "p": "9 €", "d": "Insalata mista di stagione"}, {"n": "Caesar salad", "a": "Glutine, Uova, Latte", "p": "14 €", "d": "Lattuga, pollo, crostini, parmigiano, Caesar"}, {"n": "Insalata avocado e salmone", "a": "Latte, Frutta a guscio", "p": "16 €", "d": "Con salmone affumicato e songino"}, {"n": "Insalata greca", "a": "Latte", "p": "14 €", "d": "Pomodoro, cetriolo, olive, cipolla, feta"}, {"n": "Insalata romana", "a": "Uova, Pesce", "p": "14 €", "d": "Lattuga, uova sode e tonno"}, {"n": "Insalata burrata e cipolla", "a": "Uova, Pesce", "p": "14 €", "d": "Burrata, cipolla caramellizzata, uova"}], "🍰 Dolci": [{"n": "Tiramisu fatto in casa", "a": "Glutine, Uova, Latte", "p": "8 €", "d": "Mascarpone e savoiardi"}, {"n": "Gelato misto", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "8 €", "d": "Selezione di gelati artigianali"}, {"n": "Cheesecake fatta in casa", "a": "Glutine, Latte", "p": "8 €", "d": "Cremosa, fatta in casa"}, {"n": "Macedonia di frutta fresca", "a": "", "p": "8 €", "d": "Frutta fresca di stagione"}, {"n": "Fragole con gelato", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "9 €", "d": "Con gelato alla vaniglia e panna"}, {"n": "Delizia al limone Sal De Riso", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "9 €", "d": "Pasticceria Sal De Riso"}, {"n": "Torta ricotta e pere Sal De Riso", "a": "Glutine, Uova, Latte, Frutta a guscio", "p": "9 €", "d": "Pasticceria Sal De Riso"}], "🥤 Bevande": [{"n": "Acqua microfiltrata naturale 0,75L", "a": "", "p": "3,00 €", "d": "Acqua naturale microfiltrata"}, {"n": "Acqua microfiltrata frizzante 0,75L", "a": "", "p": "3,00 €", "d": "Acqua frizzante microfiltrata"}, {"n": "Acqua naturale 0,5L", "a": "", "p": "2,00 €", "d": "Acqua naturale"}, {"n": "Acqua frizzante 0,5L", "a": "", "p": "2,00 €", "d": "Acqua frizzante"}, {"n": "Coca Cola", "a": "", "p": "4,00 €", "d": "In lattina"}, {"n": "Coca Cola Zero", "a": "", "p": "4,00 €", "d": "In lattina"}, {"n": "Fanta", "a": "", "p": "4,00 €", "d": "Arancia in lattina"}, {"n": "Sprite", "a": "", "p": "4,00 €", "d": "In lattina"}, {"n": "Te freddo pesca o limone", "a": "", "p": "4,00 €", "d": "Te freddo alla pesca o al limone"}, {"n": "Schweppes limone tonica ginger", "a": "", "p": "4,00 €", "d": "Schweppes vari gusti"}, {"n": "Succhi di frutta", "a": "", "p": "4,00 €", "d": "Selezione di succhi"}, {"n": "Spremuta d'arancia", "a": "", "p": "6,00 €", "d": "Fresca"}], "🥤 Milkshake e Centrifughe": [{"n": "Milkshake", "a": "Latte, Frutta a guscio", "p": "6,00 €", "d": "Fragola, banana, vaniglia, cioccolato, pistacchio, caramello"}, {"n": "Centrifuga Estate", "a": "", "p": "6,00 €", "d": "Mela, ananas e melone"}, {"n": "Centrifuga Energica", "a": "", "p": "6,00 €", "d": "Mela, fragola e ananas"}, {"n": "Centrifuga Depurativa", "a": "Sedano", "p": "6,00 €", "d": "Ananas, mela e sedano"}, {"n": "Centrifuga Salute", "a": "", "p": "6,00 €", "d": "Mela, carota e zenzero"}]}</script>
+<script type="application/json" id="d-menu-en">{"☕ Coffee Bar": [{"n": "Espresso", "a": "", "p": "2,00 €", "d": "Classic Italian espresso"}, {"n": "Espresso con panna", "a": "Milk", "p": "3,00 €", "d": "With whipped cream"}, {"n": "Espresso decaffeinato", "a": "", "p": "3,00 €", "d": "Decaffeinated espresso"}, {"n": "Espresso doppio", "a": "", "p": "4,00 €", "d": "Double shot"}, {"n": "Caffe shakerato", "a": "", "p": "4,00 €", "d": "Shaken over ice"}, {"n": "Cappuccino", "a": "Milk", "p": "4,00 €", "d": "With steamed milk foam"}, {"n": "Caffe americano", "a": "", "p": "3,00 €", "d": "Diluted with hot water"}, {"n": "Irish coffee", "a": "Milk", "p": "8,00 €", "d": "With whiskey and whipped cream"}, {"n": "Latte macchiato", "a": "Milk", "p": "4,00 €", "d": "Hot milk with espresso"}, {"n": "Cioccolata calda", "a": "Milk", "p": "5,00 €", "d": "Creamy hot chocolate"}, {"n": "Cioccolata calda con panna", "a": "Milk", "p": "6,00 €", "d": "With whipped cream"}, {"n": "Te, camomilla e infusi", "a": "", "p": "4,00 €", "d": "Selection of hot teas and herbal infusions"}], "🍳 Savoury Breakfast": [{"n": "Uova strapazzate con bacon", "a": "Eggs, Milk", "p": "9,00 €", "d": "With crispy bacon"}, {"n": "Omelette prosciutto e formaggio", "a": "Eggs, Milk", "p": "12,00 €", "d": "Filled with cooked ham and cheese"}, {"n": "Uovo poche con spinaci", "a": "Gluten, Eggs, Milk, Mustard, Soya", "p": "8,00 €", "d": "Poached egg on sautéed spinach"}, {"n": "Uovo poche con prosciutto", "a": "Gluten, Eggs, Milk, Mustard, Soya", "p": "8,00 €", "d": "With Parma ham"}, {"n": "Uovo poche spinaci e salmone", "a": "Gluten, Eggs, Milk, Fish, Mustard, Soya", "p": "10,00 €", "d": "With spinach and smoked salmon"}, {"n": "Avocado toast", "a": "Gluten, Eggs, Fish, Soya, Tree nuts", "p": "12,00 €", "d": "Toasted bread, avocado, egg and salmon"}, {"n": "Toast prosciutto e formaggio", "a": "Gluten, Milk", "p": "6,00 €", "d": "Classic toast with cooked ham"}, {"n": "Club sandwich", "a": "Gluten, Eggs, Milk", "p": "12,00 €", "d": "Ham, chicken, egg, lettuce, tomato, mayo"}], "🥐 Sweet Breakfast": [{"n": "Pancakes caramello salato e banana", "a": "Gluten, Eggs, Milk", "p": "12,00 €", "d": "With salted caramel, banana and cocoa"}, {"n": "Pancakes sciroppo acero e frutti di bosco", "a": "Gluten, Eggs, Milk", "p": "10,00 €", "d": "With maple syrup, mixed berries and cream"}, {"n": "Pancakes frutti di bosco e gelato", "a": "Gluten, Eggs, Milk", "p": "10,00 €", "d": "With mixed berries, ice cream and cream"}, {"n": "Macedonia di frutta fresca", "a": "", "p": "7,00 €", "d": "Fresh seasonal fruit selection"}, {"n": "Banana split", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "10,00 €", "d": "Banana, ice cream, cream and hazelnuts"}, {"n": "Torta al cioccolato", "a": "Gluten, Eggs, Milk", "p": "7,00 €", "d": "Dark chocolate cake, homemade"}, {"n": "Yogurt con cereali e frutta", "a": "Gluten, Milk, Tree nuts", "p": "10,00 €", "d": "White yogurt, cereal mix and fresh fruit"}], "🌅 Full Breakfast": [{"n": "Menu Breakfast completo", "a": "Gluten, Eggs, Milk", "p": "16,00 €", "d": "Eggs, bacon, toast, butter, jam, coffee, juice"}], "🥗 Starters": [{"n": "Bruschette al pomodoro 2 pz", "a": "Gluten", "p": "6 €", "d": "Fresh tomato, garlic and basil"}, {"n": "Tris di bruschette", "a": "Gluten, Fish, Milk", "p": "12 €", "d": "Three bruschettas with different toppings"}, {"n": "Misto di formaggi italiani", "a": "Milk", "p": "14 €", "d": "With honey and jam"}, {"n": "Caprese alla genovese", "a": "Milk, Tree nuts", "p": "14 €", "d": "Mozzarella, tomato, basil and pesto"}, {"n": "Bufala con prosciutto", "a": "Milk", "p": "14 €", "d": "Buffalo mozzarella with cured ham"}, {"n": "Burrata con alici e pomodori secchi", "a": "Milk, Fish, Celery", "p": "14 €", "d": "Fresh burrata with anchovies and sun-dried tomatoes"}, {"n": "Tartare di manzo con tartufo e burrata", "a": "Milk", "p": "18 €", "d": "Beef tartare, fresh truffle and burrata"}, {"n": "Carciofi alla romana 2 pz", "a": "", "p": "12 €", "d": "With wild mint and garlic"}, {"n": "Carpaccio di manzo rucola e grana", "a": "Milk", "p": "16 €", "d": "With rocket and Grana Padano shavings"}, {"n": "Saute di cozze al vino bianco", "a": "Gluten, Molluscs, Fish", "p": "16 €", "d": "Mussels in white wine with toasted bread"}, {"n": "Grande antipasto", "a": "Gluten, Eggs, Soya, Milk, Tree nuts, Celery, Sesame", "p": "30 €", "d": "Large mixed antipasto from the house"}], "🍝 Pasta": [{"n": "Rigatoni alla carbonara", "a": "Gluten, Eggs, Milk", "p": "14 €", "d": "Guanciale, egg, Pecorino Romano and black pepper"}, {"n": "Rigatoni all'amatriciana", "a": "Gluten, Milk, Celery", "p": "14 €", "d": "Guanciale, San Marzano tomato and Pecorino"}, {"n": "Tonnarelli alla gricia", "a": "Gluten, Eggs, Milk", "p": "14 €", "d": "Guanciale, Pecorino Romano and black pepper"}, {"n": "Tonnarelli cacio e pepe nel cestino di grana", "a": "Gluten, Eggs, Milk", "p": "16 €", "d": "Served in a Grana Padano basket"}, {"n": "Fettuccine Alfredo", "a": "Gluten, Eggs, Milk", "p": "15 €", "d": "Butter and Parmesan"}, {"n": "Fettuccine alla bolognese", "a": "Gluten, Eggs, Milk, Celery", "p": "16 €", "d": "Classic Bolognese meat sauce"}, {"n": "Fettuccine carciofi guanciale e pecorino", "a": "Gluten, Eggs, Milk", "p": "16 €", "d": "With crispy guanciale"}, {"n": "Fettuccine cozze e pecorino", "a": "Gluten, Eggs, Milk, Molluscs", "p": "15 €", "d": "Fresh mussels and Pecorino Romano"}, {"n": "Spaghetti alle vongole e bottarga", "a": "Gluten, Molluscs", "p": "18 €", "d": "Fresh clams and mullet bottarga"}, {"n": "Spaghetti ai frutti di mare", "a": "Gluten, Crustaceans, Molluscs", "p": "23 €", "d": "Mix of fresh seafood"}, {"n": "Spaghetti con polpette", "a": "Gluten, Eggs, Milk, Celery", "p": "17 €", "d": "Beef meatballs in tomato sauce"}, {"n": "Lasagna al ragu di manzo", "a": "Gluten, Eggs, Milk, Celery", "p": "15 €", "d": "With béchamel sauce"}, {"n": "Ravioli di burrata con crema di pistacchio", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "16 €", "d": "With stracciatella cheese"}, {"n": "Ravioli di burrata al pomodoro", "a": "Gluten, Eggs, Milk, Celery", "p": "14 €", "d": "With stracciatella cheese"}, {"n": "Gnocchi al pesto di basilico", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "15 €", "d": "With confit tomatoes"}, {"n": "Gnocchi ai quattro formaggi", "a": "Gluten, Eggs, Milk", "p": "14 €", "d": "Four-cheese cream sauce"}, {"n": "Aggiunta burrata", "a": "Milk", "p": "+5 €", "d": "Fresh burrata add-on"}, {"n": "Aggiunta tartufo fresco", "a": "", "p": "+7 €", "d": "Freshly grated truffle add-on"}], "🍲 Soups & Risotto": [{"n": "Risotto ai funghi porcini e tartufo", "a": "Gluten, Eggs, Soya, Milk, Tree nuts, Sesame", "p": "20 €", "d": "Creamy with porcini mushrooms and fresh truffle"}, {"n": "Risotto ai frutti di mare", "a": "Crustaceans, Molluscs", "p": "25 €", "d": "Mix of fresh seafood"}, {"n": "Zuppa di pesce", "a": "Gluten, Crustaceans, Fish, Molluscs", "p": "25 €", "d": "Rich fish and seafood soup"}], "🐟 Fish & Seafood": [{"n": "Spaghetti alle vongole e bottarga", "a": "Gluten, Molluscs", "p": "18 €", "d": "Fresh clams and mullet bottarga"}, {"n": "Spaghetti ai frutti di mare", "a": "Gluten, Crustaceans, Molluscs", "p": "23 €", "d": "Mix of fresh seafood"}, {"n": "Fettuccine cozze e pecorino", "a": "Gluten, Eggs, Milk, Molluscs", "p": "15 €", "d": "Fresh mussels and Pecorino Romano"}, {"n": "Zuppa di pesce", "a": "Gluten, Crustaceans, Fish, Molluscs", "p": "25 €", "d": "Rich fish and seafood soup"}, {"n": "Risotto ai frutti di mare", "a": "Crustaceans, Molluscs", "p": "25 €", "d": "Mix of fresh seafood"}, {"n": "Frittura di calamari e gamberi", "a": "Gluten, Crustaceans, Molluscs", "p": "20 €", "d": "Crispy fried calamari and prawns, marinara sauce +4 euro"}, {"n": "Trancio di salmone al forno", "a": "Fish, Sesame", "p": "24 €", "d": "With cherry tomatoes, olives and capers"}, {"n": "Spigola al forno con patate", "a": "Fish", "p": "7 euro/100g", "d": "Whole sea bass baked with potatoes"}], "🍕 Pizza": [{"n": "Margherita", "a": "Gluten, Milk, Celery", "p": "9 €", "d": "Tomato, fior di latte, basil"}, {"n": "Napoletana", "a": "Gluten, Fish, Milk, Celery", "p": "11 €", "d": "Tomato, mozzarella, anchovies, capers"}, {"n": "Prosciutto", "a": "Gluten, Milk, Celery", "p": "11 €", "d": "Tomato, mozzarella, cooked ham"}, {"n": "Funghi e prosciutto", "a": "Gluten, Milk, Celery", "p": "12 €", "d": "Tomato, mozzarella, mushrooms, ham"}, {"n": "Capricciosa", "a": "Gluten, Eggs, Milk", "p": "13 €", "d": "Ham, mushrooms, olives, artichokes, egg"}, {"n": "Diavola", "a": "Gluten, Milk, Celery", "p": "13 €", "d": "Tomato, mozzarella, spicy salami"}, {"n": "Vegetariana", "a": "Gluten, Milk, Celery", "p": "12 €", "d": "Tomato, mozzarella, grilled vegetables"}, {"n": "Tonno e cipolla", "a": "Gluten, Fish, Milk, Celery", "p": "12 €", "d": "Tomato, mozzarella, tuna, onion"}, {"n": "4 Formaggi", "a": "Gluten, Milk", "p": "14 €", "d": "Mozzarella, gorgonzola, provola, parmesan"}, {"n": "Boscaiola", "a": "Gluten, Milk, Celery", "p": "14 €", "d": "Mozzarella, sausage, porcini mushrooms"}, {"n": "Mortadella e pistacchio", "a": "Gluten, Milk, Tree nuts", "p": "15 €", "d": "Mozzarella, mortadella, pistachio cream"}, {"n": "Pizza bufalina", "a": "Gluten, Fish, Milk", "p": "12 €", "d": "Tomato, buffalo mozzarella, anchovies"}, {"n": "Pizza burrata e salmone", "a": "Gluten, Crustaceans, Milk, Molluscs", "p": "16 €", "d": "White base, burrata, smoked salmon"}, {"n": "Pizza salsiccia provola e patate", "a": "Gluten, Milk", "p": "16 €", "d": "White base, sausage, provola, potatoes"}], "🥩 Main Courses": [{"n": "Filetto alla griglia", "a": "", "p": "28 €", "d": "Grilled beef fillet"}, {"n": "Filetto di manzo ai funghi porcini", "a": "Gluten, Milk", "p": "33 €", "d": "With porcini mushroom cream"}, {"n": "Tagliata di manzo rucola e grana", "a": "Milk", "p": "26 €", "d": "With rocket, cherry tomatoes and Grana Padano"}, {"n": "Hamburger Benso", "a": "Gluten, Milk", "p": "15 €", "d": "Beef with house sauce"}, {"n": "Saltimbocca alla romana", "a": "Gluten, Milk", "p": "16 €", "d": "Veal with cured ham and sage"}, {"n": "Pollo alla cacciatora", "a": "Gluten, Milk, Celery", "p": "16 €", "d": "With olives, capers and tomato"}, {"n": "Pollo alla romana", "a": "Gluten, Milk, Celery", "p": "16 €", "d": "With peppers and tomato"}, {"n": "Petto di pollo ai 4 formaggi", "a": "Gluten, Milk", "p": "15 €", "d": "Gratin with four cheeses"}, {"n": "Polpette al sugo 5 pz", "a": "Gluten, Eggs, Milk, Celery", "p": "14 €", "d": "Beef meatballs in tomato sauce"}], "🥗 Side Dishes": [{"n": "Patatine fritte", "a": "Gluten", "p": "7 €", "d": "Crispy french fries"}, {"n": "Patate arrosto", "a": "", "p": "7 €", "d": "Oven-baked with rosemary"}, {"n": "Verdure grigliate", "a": "", "p": "7 €", "d": "Mixed seasonal grilled vegetables"}, {"n": "Spinaci", "a": "", "p": "7 €", "d": "Sautéed with garlic and olive oil"}, {"n": "Cicoria ripassata", "a": "", "p": "7 €", "d": "With garlic, olive oil and chilli"}, {"n": "Carciofo alla romana", "a": "", "p": "7 €", "d": "With wild mint and garlic"}], "🥗 Salads": [{"n": "Insalata mista", "a": "", "p": "9 €", "d": "Mixed seasonal salad"}, {"n": "Caesar salad", "a": "Gluten, Eggs, Milk", "p": "14 €", "d": "Lettuce, chicken, croutons, parmesan, Caesar dressing"}, {"n": "Insalata avocado e salmone", "a": "Milk, Tree nuts", "p": "16 €", "d": "With smoked salmon and lamb's lettuce"}, {"n": "Insalata greca", "a": "Milk", "p": "14 €", "d": "Tomato, cucumber, olives, onion, feta"}, {"n": "Insalata romana", "a": "Eggs, Fish", "p": "14 €", "d": "Lettuce, hard-boiled eggs and tuna"}, {"n": "Insalata burrata e cipolla", "a": "Eggs, Fish", "p": "14 €", "d": "Burrata, caramelised onion, eggs"}], "🍰 Desserts": [{"n": "Tiramisu fatto in casa", "a": "Gluten, Eggs, Milk", "p": "8 €", "d": "Mascarpone and ladyfingers"}, {"n": "Gelato misto", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "8 €", "d": "Selection of artisan ice creams"}, {"n": "Cheesecake fatta in casa", "a": "Gluten, Milk", "p": "8 €", "d": "Creamy, homemade"}, {"n": "Macedonia di frutta fresca", "a": "", "p": "8 €", "d": "Fresh seasonal fruit"}, {"n": "Fragole con gelato", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "9 €", "d": "With vanilla ice cream and cream"}, {"n": "Delizia al limone Sal De Riso", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "9 €", "d": "Sal De Riso pastry"}, {"n": "Torta ricotta e pere Sal De Riso", "a": "Gluten, Eggs, Milk, Tree nuts", "p": "9 €", "d": "Sal De Riso pastry"}], "🥤 Drinks": [{"n": "Acqua microfiltrata naturale 0,75L", "a": "", "p": "3,00 €", "d": "Microfiltered still water"}, {"n": "Acqua microfiltrata frizzante 0,75L", "a": "", "p": "3,00 €", "d": "Microfiltered sparkling water"}, {"n": "Acqua naturale 0,5L", "a": "", "p": "2,00 €", "d": "Still water"}, {"n": "Acqua frizzante 0,5L", "a": "", "p": "2,00 €", "d": "Sparkling water"}, {"n": "Coca Cola", "a": "", "p": "4,00 €", "d": "Can"}, {"n": "Coca Cola Zero", "a": "", "p": "4,00 €", "d": "Can"}, {"n": "Fanta", "a": "", "p": "4,00 €", "d": "Orange, can"}, {"n": "Sprite", "a": "", "p": "4,00 €", "d": "Can"}, {"n": "Te freddo pesca o limone", "a": "", "p": "4,00 €", "d": "Iced tea peach or lemon"}, {"n": "Schweppes limone tonica ginger", "a": "", "p": "4,00 €", "d": "Schweppes various flavours"}, {"n": "Succhi di frutta", "a": "", "p": "4,00 €", "d": "Fruit juice selection"}, {"n": "Spremuta d'arancia", "a": "", "p": "6,00 €", "d": "Freshly squeezed orange juice"}], "🥤 Milkshakes & Juices": [{"n": "Milkshake", "a": "Milk, Tree nuts", "p": "6,00 €", "d": "Strawberry, banana, vanilla, chocolate, pistachio, caramel"}, {"n": "Centrifuga Estate", "a": "", "p": "6,00 €", "d": "Apple, pineapple and melon"}, {"n": "Centrifuga Energica", "a": "", "p": "6,00 €", "d": "Apple, strawberry and pineapple"}, {"n": "Centrifuga Depurativa", "a": "Celery", "p": "6,00 €", "d": "Pineapple, apple and celery"}, {"n": "Centrifuga Salute", "a": "", "p": "6,00 €", "d": "Apple, carrot and ginger"}]}</script>
+<script type="application/json" id="d-lng">{"it": {"chat": "Chat", "menu": "Menù", "label": "Chiedimi subito", "ph": "Scrivi una domanda…", "welcome": "Benvenuto da **Benso Ristorante Enoteca Bistrot**! 🍷\nSono il tuo assistente virtuale. Chiedimi dei piatti, degli allergeni, o cosa ti consiglio oggi!\n\n📍 Via Cavour 215, Roma · ☎ +39 06 4893 0947", "err": "⚠️ Errore di connessione. Riprova.", "errsrv": "⚠️ Errore server ({c}). Riprova.", "disc": "ℹ️ Prezzi e disponibilità possono variare. Verifica sempre col personale · +39 06 4893 0947", "reset": "Cambiare lingua azzerà la chat. Continuare?", "menu_lang_btn": "EN", "allergen_title": "⚠️ Legenda Allergeni — Reg. UE 1169/2011", "allergen_body": "A Glutine · B Crostacei · C Uova · D Pesce · E Arachidi · F Soia · G Latte · H Frutta a guscio · I Sedano · J Senape · K Sesamo · L Solfiti · M Lupini · N Molluschi", "allergen_note": "Indicativo — confermare sempre col personale.", "dishes": "piatti", "chips": ["💡 Cosa mi consigli?", "⚠️ Ho un allergia", "🍳 Colazione", "🥗 Antipasti", "🍝 Pasta e Risotti", "🍕 Pizza", "🥩 Secondi", "🐟 Pesce", "🍰 Dolci", "🥤 Bevande", "🌿 Vegetariano"]}, "en": {"chat": "Chat", "menu": "Menu", "label": "Ask me now", "ph": "Type a question…", "welcome": "Welcome to **Benso Ristorante Enoteca Bistrot**! 🍷\nI am your virtual assistant. Ask me about dishes, allergens or today’s recommendations!\n\n📍 Via Cavour 215, Rome · ☎ +39 06 4893 0947", "err": "⚠️ Connection error. Please try again.", "errsrv": "⚠️ Server error ({c}). Please try again.", "disc": "ℹ️ Prices and availability may vary. Always confirm with staff · +39 06 4893 0947", "reset": "Changing language will reset the chat. Continue?", "menu_lang_btn": "IT", "allergen_title": "⚠️ Allergen Legend — EU Reg. 1169/2011", "allergen_body": "A Gluten · B Crustaceans · C Eggs · D Fish · E Peanuts · F Soya · G Milk · H Tree nuts · I Celery · J Mustard · K Sesame · L Sulphites · M Lupins · N Molluscs", "allergen_note": "Indicative — always confirm with staff before ordering.", "dishes": "dishes", "chips": ["💡 What do you recommend?", "⚠️ I have an allergy", "🍳 Breakfast", "🥗 Starters", "🍝 Pasta & Risotto", "🍕 Pizza", "🥩 Main courses", "🐟 Fish & Seafood", "🍰 Desserts", "🥤 Drinks", "🌿 Vegetarian"]}, "es": {"chat": "Chat", "menu": "Menú", "label": "Pregúntame", "ph": "Escribe una pregunta…", "welcome": "Bienvenido a **Benso Ristorante Enoteca Bistrot**! 🍷\n📍 Via Cavour 215, Roma · ☎ +39 06 4893 0947", "err": "⚠️ Error de conexión. Inténtalo de nuevo.", "errsrv": "⚠️ Error del servidor ({c}).", "disc": "ℹ️ Precios orientativos · +39 06 4893 0947", "reset": "Cambiar idioma reiniciará la conversación. Continuar?", "menu_lang_btn": "IT", "allergen_title": "⚠️ Alergénos — Reg. UE 1169/2011", "allergen_body": "A Gluten · B Crustáceos · C Huevos · D Pescado · E Cacahuetes · F Soja · G Leche · H Frutos secos · I Apio · J Mostaza · K Sésamo · L Sulfitos · M Altramuces · N Moluscos", "allergen_note": "Información orientativa — confirmar siempre con el personal.", "dishes": "platos", "chips": ["💡 Qué recomiendas?", "⚠️ Tengo una alergia", "🍳 Desayuno", "🥗 Entrantes", "🍝 Pasta", "🍕 Pizza", "🥩 Segundos", "🐟 Pescado", "🍰 Postres", "🥤 Bebidas", "🌿 Vegetariano"]}, "fr": {"chat": "Chat", "menu": "Menu", "label": "Demandez-moi", "ph": "Écrivez une question…", "welcome": "Bienvenue chez **Benso Ristorante Enoteca Bistrot** ! 🍷\n📍 Via Cavour 215, Rome · ☎ +39 06 4893 0947", "err": "⚠️ Erreur de connexion. Réessayez.", "errsrv": "⚠️ Erreur serveur ({c}).", "disc": "ℹ️ Prix indicatifs · +39 06 4893 0947", "reset": "Changer de langue réinitialisera la conversation. Continuer ?", "menu_lang_btn": "IT", "allergen_title": "⚠️ Allergènes — Règl. UE 1169/2011", "allergen_body": "A Gluten · B Crustacés · C Oeufs · D Poisson · E Arachides · F Soja · G Lait · H Fruits à coque · I Céleri · J Moutarde · K Sésame · L Sulfites · M Lupins · N Mollusques", "allergen_note": "Indicatif — toujours confirmer avec le personnel.", "dishes": "plats", "chips": ["💡 Que conseillez-vous?", "⚠️ Allergie", "🍳 Petit-déjeuner", "🥗 Entrées", "🍝 Pâtes", "🍕 Pizza", "🥩 Plats", "🐟 Poisson", "🍰 Desserts", "🥤 Boissons", "🌿 Végétarien"]}, "de": {"chat": "Chat", "menu": "Menü", "label": "Fragen Sie mich", "ph": "Frage eingeben…", "welcome": "Willkommen bei **Benso Ristorante Enoteca Bistrot**! 🍷\n📍 Via Cavour 215, Rom · ☎ +39 06 4893 0947", "err": "⚠️ Verbindungsfehler. Bitte erneut versuchen.", "errsrv": "⚠️ Serverfehler ({c}).", "disc": "ℹ️ Preise unverbindlich · +39 06 4893 0947", "reset": "Sprache ändern und Chat zurücksetzen?", "menu_lang_btn": "IT", "allergen_title": "⚠️ Allergen-Legende — EU-Verordnung 1169/2011", "allergen_body": "A Gluten · B Krebstiere · C Eier · D Fisch · E Erdnüsse · F Soja · G Milch · H Schalenfrüchte · I Sellerie · J Senf · K Sesam · L Sulfite · M Lupinen · N Weichtiere", "allergen_note": "Unverbindlich — immer beim Personal bestätigen.", "dishes": "Gerichte", "chips": ["💡 Was empfehlen Sie?", "⚠️ Allergie", "🍳 Frühstück", "🥗 Vorspeisen", "🍝 Pasta", "🍕 Pizza", "🥩 Hauptspeisen", "🐟 Fisch", "🍰 Desserts", "🥤 Getränke", "🌿 Vegetarisch"]}, "zh": {"chat": "聊天", "menu": "菜单", "label": "立即询问", "ph": "输入邗问…", "welcome": "欢迎来到 **Benso Ristorante Enoteca Bistrot**！ 🍷\n📍 Via Cavour 215, 罗马 · ☎ +39 06 4893 0947", "err": "⚠️ 连接错误，请重试。", "errsrv": "⚠️ 服务器错误 ({c})。", "disc": "ℹ️ 价格仅供参考 · +39 06 4893 0947", "reset": "更改语言将重置对话，继续？", "menu_lang_btn": "IT", "allergen_title": "⚠️ 过敏原图例 — 欧盟法规 1169/2011", "allergen_body": "A 麦醇 · B 甲壳类 · C 鸡蛋 · D 鱼 · E 花生 · F 大豆 · G 牛奶 · H 坚果 · I 芝麻 · J 芥末 · K 芝麻 · L 亚硫酸盐 · M 羽扇豆 · N 软体动物", "allergen_note": "仅供参考 — 请在点餐前向工作人员确认。", "dishes": "道菜", "chips": ["💡 推荐菜品", "⚠️ 我有过敏", "🍳 早餐", "🥗 前菜", "🍝 意面", "🍕 披萨", "🥩 主菜", "🐟 海鲜", "🍰 甜点", "🥤 饮品", "🌿 素食"]}}</script>
 <script>
-  const WEBHOOK_URL = 'http://rantu02.duckdns.org:5678/webhook/587747ba-e7a2-464f-b3f6-7243711c3b8d';
-  var MENU_URL    = 'https://www.bensoristoranteroma.com/menu-a-la-carte/';
-  var API_KEY     = 'benso-secret-2026';
-  var MAX_HISTORY = 6;
+document.addEventListener('DOMContentLoaded', function () {
 
-  var messagesDiv = document.getElementById('messages');
-  var inputEl     = document.getElementById('input');
-  var sendBtn     = document.getElementById('send-btn');
-  var typingEl    = document.getElementById('typing');
-  var langScreen  = document.getElementById('lang-screen');
-  var chatArea    = document.getElementById('chat-area');
-  var langBadge   = document.getElementById('lang-badge');
-  var quickRow    = document.getElementById('quick-row');
-  var quickLabel  = document.getElementById('quick-label');
+  var MENU_IT = JSON.parse(document.getElementById('d-menu-it').textContent);
+  var MENU_EN = JSON.parse(document.getElementById('d-menu-en').textContent);
+  var LNG     = JSON.parse(document.getElementById('d-lng').textContent);
 
-  var currentLang           = 'it';
-  var conversationHistory   = [];
-  var quickAlreadyCollapsed = false;
-  var priceDisclaimerShown  = false;
+  var HOOK   = 'https://n8n-smdi.srv1453033.hstgr.cloud/webhook/587747ba-e7a2-464f-b3f6-7243711c3b8d';
+  var APIKEY = 'benso-secret-2026';
+  var PRICE_KW = ['prezzo','prezzi','quanto costa','price','cost','prix','preis','costo'];
 
-  var errorByLang = {
-    it: { server: '⚠️ Errore {code} dal server. Riprova tra un momento.', network: '⚠️ Nessuna connessione. Controlla la rete e riprova.' },
-    en: { server: '⚠️ Server error {code}. Please try again shortly.',    network: '⚠️ Connection error. Check your network and try again.' },
-    es: { server: '⚠️ Error del servidor {code}. Por favor, inténtalo.',  network: '⚠️ Error de conexión. Comprueba tu red.' },
-    fr: { server: '⚠️ Erreur serveur {code}. Veuillez réessayer.',        network: '⚠️ Erreur de connexion. Vérifiez votre réseau.' },
-    de: { server: '⚠️ Serverfehler {code}. Bitte erneut versuchen.',      network: '⚠️ Verbindungsfehler. Überprüfen Sie Ihre Verbindung.' },
-    zh: { server: '⚠️ 服务器错误 {code}，请稍后重试。',                       network: '⚠️ 连接错误，请检查网络后重试。' }
-  };
+  var lang = 'it', menuLang = 'it', hist = [], priceShown = false, menuDone = false;
 
-  var menuFeedbackByLang = {
-    it: '📋 Apro il menu completo per te!\n👉 ' + MENU_URL,
-    en: '📋 Opening the full menu for you!\n👉 ' + MENU_URL,
-    es: '📋 ¡Aquí tienes el menú completo!\n👉 ' + MENU_URL,
-    fr: '📋 Voici le menu complet !\n👉 ' + MENU_URL,
-    de: '📋 Hier ist die vollständige Speisekarte!\n👉 ' + MENU_URL,
-    zh: '📋 这是完整菜单！\n👉 ' + MENU_URL
-  };
+  function g(id) { return document.getElementById(id); }
+  function t(k)  { var l = LNG[lang] || LNG['it']; return l[k] !== undefined ? l[k] : ''; }
 
-  var placeholderByLang = {
-    it: 'Scrivi una domanda...', en: 'Type a question...',
-    es: 'Escribe una pregunta...', fr: 'Écrivez une question...',
-    de: 'Frage eingeben...', zh: '输入问题...'
-  };
-
-  var welcomeByLang = {
-    it: 'Benvenuto da **Benso Ristorante Enoteca Bistrot**! 🍷\nSono il tuo assistente virtuale. Chiedimi dei piatti, degli allergeni o cosa ti consiglio oggi!\n\n📍 Via Cavour 215, Roma · ☎️ +39 06 4893 0947',
-    en: 'Welcome to **Benso Ristorante Enoteca Bistrot**! 🍷\nAsk me about dishes, allergens or my recommendations!\n\n📍 Via Cavour 215, Rome · ☎️ +39 06 4893 0947',
-    es: '¡Bienvenido a **Benso Ristorante Enoteca Bistrot**! 🍷\nPregúntame sobre los platos, alérgenos o qué recomiendo hoy.\n\n📍 Via Cavour 215, Roma · ☎️ +39 06 4893 0947',
-    fr: 'Bienvenue chez **Benso Ristorante Enoteca Bistrot** ! 🍷\nDemandez-moi les plats, les allergènes ou mes recommandations !\n\n📍 Via Cavour 215, Rome · ☎️ +39 06 4893 0947',
-    de: 'Willkommen bei **Benso Ristorante Enoteca Bistrot**! 🍷\nFragen Sie mich nach Gerichten, Allergenen oder meinen Empfehlungen!\n\n📍 Via Cavour 215, Rom · ☎️ +39 06 4893 0947',
-    zh: '欢迎来到 **Benso Ristorante Enoteca Bistrot**！🍷\n请询问菜品、过敏原或今日推荐！\n\n📍 Via Cavour 215, 罗马 · ☎️ +39 06 4893 0947'
-  };
-
-  var resetConfirmByLang = {
-    it: 'Cambiare lingua azzererà la conversazione. Continuare?',
-    en: 'Changing language will reset the conversation. Continue?',
-    es: 'Cambiar el idioma reiniciará la conversación. ¿Continuar?',
-    fr: 'Changer de langue réinitialisera la conversation. Continuer ?',
-    de: 'Das Ändern der Sprache setzt die Unterhaltung zurück. Fortfahren?',
-    zh: '更改语言将重置对话。是否继续？'
-  };
-
-  var priceDisclaimerByLang = {
-    it: 'ℹ️ I prezzi e la disponibilità dei piatti potrebbero variare. Verifica con il personale · +39 06 4893 0947',
-    en: 'ℹ️ Prices and availability may vary. Always confirm with restaurant staff · +39 06 4893 0947',
-    es: 'ℹ️ Los precios y disponibilidad pueden variar. Confirma con el personal · +39 06 4893 0947',
-    fr: 'ℹ️ Les prix et la disponibilité peuvent varier. Confirmez avec le personnel · +39 06 4893 0947',
-    de: 'ℹ️ Preise und Verfügbarkeit können variieren. Bitte beim Personal nachfragen · +39 06 4893 0947',
-    zh: 'ℹ️ 价格和菜品供应情况可能变化，请向员工确认 · +39 06 4893 0947'
-  };
-
-  var menuKeywords  = ['menu completo','full menu','menú completo','menu complet','speisekarte','完整菜单'];
-  var priceKeywords = ['prezzo','prezzi','quanto costa','costo','price','cost','prix','preis','价格','多少钱'];
-
-  // ── QUICK BUTTONS ──────────────────────────────────────────────────────
-  var quickByLang = {
-    it: {
-      label: 'Chiedimi subito',
-      buttons: [
-        { text: '📋 Menu completo',                  primary: true,  isMenu: true  },
-        { text: "⚠️ Ho un'allergia",                 primary: false, isMenu: false },
-        { text: '💡 Cosa mi consigli?',              primary: false, isMenu: false },
-        { text: '🍳 Colazione',                      primary: false, isMenu: false },
-        { text: '🥗 Antipasti',                      primary: false, isMenu: false },
-        { text: '🍝 Pasta & Risotti',                primary: false, isMenu: false },
-        { text: '🍕 Pizza',                          primary: false, isMenu: false },
-        { text: '🥩 Secondi, Contorni & Insalate',   primary: false, isMenu: false },
-        { text: '🐟 Pesce & Crostacei',              primary: false, isMenu: false },
-        { text: '🍰 Dolci',                          primary: false, isMenu: false },
-        { text: '🥤 Bevande & Milkshake',            primary: false, isMenu: false },
-        { text: '🌿 Vegano/Vegetariano',             primary: false, isMenu: false }
-      ]
-    },
-    en: {
-      label: 'Ask me now',
-      buttons: [
-        { text: '📋 Full menu',                      primary: true,  isMenu: true  },
-        { text: '⚠️ I have an allergy',              primary: false, isMenu: false },
-        { text: '💡 What do you recommend?',         primary: false, isMenu: false },
-        { text: '🍳 Breakfast',                      primary: false, isMenu: false },
-        { text: '🥗 Starters',                       primary: false, isMenu: false },
-        { text: '🍝 Pasta & Risotto',                primary: false, isMenu: false },
-        { text: '🍕 Pizza',                          primary: false, isMenu: false },
-        { text: '🥩 Mains, Sides & Salads',          primary: false, isMenu: false },
-        { text: '🐟 Fish & Seafood',                 primary: false, isMenu: false },
-        { text: '🍰 Desserts',                       primary: false, isMenu: false },
-        { text: '🥤 Drinks & Milkshakes',            primary: false, isMenu: false },
-        { text: '🌿 Vegan/Vegetarian',               primary: false, isMenu: false }
-      ]
-    },
-    es: {
-      label: 'Pregúntame ahora',
-      buttons: [
-        { text: '📋 Menú completo',                           primary: true,  isMenu: true  },
-        { text: '⚠️ Tengo alergia',                           primary: false, isMenu: false },
-        { text: '💡 ¿Qué recomiendas?',                       primary: false, isMenu: false },
-        { text: '🍳 Desayuno',                                primary: false, isMenu: false },
-        { text: '🥗 Entrantes',                               primary: false, isMenu: false },
-        { text: '🍝 Pasta & Risotto',                         primary: false, isMenu: false },
-        { text: '🍕 Pizza',                                   primary: false, isMenu: false },
-        { text: '🥩 Segundos, Guarniciones & Ensaladas',      primary: false, isMenu: false },
-        { text: '🐟 Pescados & Mariscos',                     primary: false, isMenu: false },
-        { text: '🍰 Postres',                                 primary: false, isMenu: false },
-        { text: '🥤 Bebidas & Milkshakes',                    primary: false, isMenu: false },
-        { text: '🌿 Vegano/Vegetariano',                      primary: false, isMenu: false }
-      ]
-    },
-    fr: {
-      label: 'Demandez-moi',
-      buttons: [
-        { text: '📋 Menu complet',                            primary: true,  isMenu: true  },
-        { text: "⚠️ J'ai une allergie",                       primary: false, isMenu: false },
-        { text: '💡 Que conseillez-vous?',                    primary: false, isMenu: false },
-        { text: '🍳 Petit-déjeuner',                          primary: false, isMenu: false },
-        { text: '🥗 Entrées',                                 primary: false, isMenu: false },
-        { text: '🍝 Pâtes & Risotto',                         primary: false, isMenu: false },
-        { text: '🍕 Pizza',                                   primary: false, isMenu: false },
-        { text: '🥩 Plats, Accompagnements & Salades',        primary: false, isMenu: false },
-        { text: '🐟 Poisson & Fruits de mer',                 primary: false, isMenu: false },
-        { text: '🍰 Desserts',                                primary: false, isMenu: false },
-        { text: '🥤 Boissons & Milkshakes',                   primary: false, isMenu: false },
-        { text: '🌿 Végane/Végétarien',                       primary: false, isMenu: false }
-      ]
-    },
-    de: {
-      label: 'Fragen Sie mich',
-      buttons: [
-        { text: '📋 Speisekarte',                             primary: true,  isMenu: true  },
-        { text: '⚠️ Ich habe eine Allergie',                  primary: false, isMenu: false },
-        { text: '💡 Was empfehlen Sie?',                      primary: false, isMenu: false },
-        { text: '🍳 Frühstück',                               primary: false, isMenu: false },
-        { text: '🥗 Vorspeisen',                              primary: false, isMenu: false },
-        { text: '🍝 Pasta & Risotto',                         primary: false, isMenu: false },
-        { text: '🍕 Pizza',                                   primary: false, isMenu: false },
-        { text: '🥩 Hauptspeisen, Beilagen & Salate',         primary: false, isMenu: false },
-        { text: '🐟 Fisch & Meeresfrüchte',                   primary: false, isMenu: false },
-        { text: '🍰 Desserts',                                primary: false, isMenu: false },
-        { text: '🥤 Getränke & Milkshakes',                   primary: false, isMenu: false },
-        { text: '🌿 Vegan/Vegetarisch',                       primary: false, isMenu: false }
-      ]
-    },
-    zh: {
-      label: '立即询问',
-      buttons: [
-        { text: '📋 完整菜单',            primary: true,  isMenu: true  },
-        { text: '⚠️ 我有过敏',            primary: false, isMenu: false },
-        { text: '💡 你推荐什么？',         primary: false, isMenu: false },
-        { text: '🍳 早餐',                primary: false, isMenu: false },
-        { text: '🥗 前菜',                primary: false, isMenu: false },
-        { text: '🍝 意面 & 烩饭',         primary: false, isMenu: false },
-        { text: '🍕 披萨',                primary: false, isMenu: false },
-        { text: '🥩 主菜、配菜 & 沙拉',   primary: false, isMenu: false },
-        { text: '🐟 鱼类 & 海鲜',         primary: false, isMenu: false },
-        { text: '🍰 甜点',                primary: false, isMenu: false },
-        { text: '🥤 饮品 & 奶昔',         primary: false, isMenu: false },
-        { text: '🌿 纯素/素食',           primary: false, isMenu: false }
-      ]
-    }
-  };
-
-  // ── UTILS ──────────────────────────────────────────────────────────────
-  function containsKeyword(text, list) {
-    var lower = text.toLowerCase();
-    for (var i = 0; i < list.length; i++) {
-      if (lower.indexOf(list[i]) !== -1) return true;
-    }
-    return false;
+  function showOverlay(id) {
+    ['s-priv','s-lang','s-modal'].forEach(function(x){ g(x).classList.remove('on'); });
+    g(id).classList.add('on');
+  }
+  function hideOverlays() {
+    ['s-priv','s-lang','s-modal'].forEach(function(x){ g(x).classList.remove('on'); });
+  }
+  function showScreen(id) {
+    ['s-chat','s-menu'].forEach(function(x){ g(x).classList.remove('on'); });
+    g(id).classList.add('on');
   }
 
-  function formatText(text) {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      .replace(/\*(.*?)\*/g, '<i>$1</i>')
-      .replace(/\r?\n/g, '<br>')
-      .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-  }
+  g('btn-accept').addEventListener('click', function(){ showOverlay('s-lang'); });
+  g('btn-priv-link').addEventListener('click', function(){ showOverlay('s-modal'); });
+  g('btn-modal-close').addEventListener('click', function(){ showOverlay('s-lang'); });
 
-  function parseReply(rawText) {
-    var trimmed = rawText.trim();
-    if (!trimmed) return '';
-    if (trimmed[0] !== '{' && trimmed[0] !== '[') return trimmed;
-    try {
-      var json = JSON.parse(trimmed);
-      if (Array.isArray(json) && json[0]) {
-        return json[0].output || json[0].message || json[0].text || json[0].reply || trimmed;
-      }
-      return json.output || json.message || json.text || json.reply || trimmed;
-    } catch(e) { return trimmed; }
-  }
-
-  function addMessage(text, type) {
-    var div = document.createElement('div');
-    div.className = 'message ' + type;
-    if (type === 'bot') div.innerHTML = formatText(text);
-    else div.textContent = text;
-    messagesDiv.insertBefore(div, typingEl);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    return div;
-  }
-
-  function addPriceDisclaimer() {
-    if (priceDisclaimerShown) return;
-    priceDisclaimerShown = true;
-    var text = priceDisclaimerByLang[currentLang] || priceDisclaimerByLang['it'];
-    var div = document.createElement('div');
-    div.className = 'info-disclaimer';
-    div.textContent = text;
-    messagesDiv.insertBefore(div, typingEl);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-
-  function setLoading(on) {
-    sendBtn.disabled = on;
-    if (on) { typingEl.classList.add('visible'); messagesDiv.scrollTop = messagesDiv.scrollHeight; }
-    else    { typingEl.classList.remove('visible'); }
-  }
-
-  function collapseQuickIfNeeded() {
-    if (!quickAlreadyCollapsed) {
-      quickAlreadyCollapsed = true;
-      quickRow.classList.add('compact');
-    }
-  }
-
-  // ── PRIVACY ────────────────────────────────────────────────────────────
-  function acceptPrivacy() {
-    document.getElementById('privacy-overlay').style.display = 'none';
-    langScreen.style.display = 'flex';
-    sessionStorage.setItem('privacy_accepted', '1');
-  }
-  function openPrivacy()  { document.getElementById('privacy-modal').classList.add('open'); }
-  function closePrivacy() { document.getElementById('privacy-modal').classList.remove('open'); }
-
-  if (sessionStorage.getItem('privacy_accepted')) {
-    document.getElementById('privacy-overlay').style.display = 'none';
-    langScreen.style.display = 'flex';
-  }
-
-  // ── LINGUA ─────────────────────────────────────────────────────────────
-  function selectLang(code, label) {
-    currentLang = code;
-    langBadge.textContent = '🌍 ' + label;
-    startChat();
-  }
-
-  function selectCustomLang() {
-    var val = document.getElementById('lang-other-input').value.trim();
-    var errEl = document.getElementById('lang-error');
-    if (!val || val.length < 2) {
-      errEl.textContent = '⚠️ Inserisci almeno 2 caratteri.'; return;
-    }
-    if (!/^[\p{L}\s\-]+$/u.test(val)) {
-      errEl.textContent = '⚠️ Inserisci solo lettere (es: Português, العربية).'; return;
-    }
-    errEl.textContent = '';
-    currentLang = val.toLowerCase();
-    langBadge.textContent = '🌍 ' + val.charAt(0).toUpperCase() + val.slice(1);
-    startChat();
-  }
-
-  function resetLang() {
-    if (conversationHistory.length > 0) {
-      var msg = resetConfirmByLang[currentLang] || resetConfirmByLang['it'];
-      if (!confirm(msg)) return;
-    }
-    conversationHistory = [];
-    priceDisclaimerShown = false;
-    chatArea.classList.remove('active');
-    messagesDiv.innerHTML = '';
-    messagesDiv.appendChild(typingEl);
-    langScreen.style.display = 'flex';
-    document.getElementById('lang-other-input').value = '';
-    document.getElementById('lang-error').textContent = '';
-  }
-
-  // ── START CHAT ─────────────────────────────────────────────────────────
-  function startChat() {
-    conversationHistory  = [];
-    priceDisclaimerShown = false;
-    langScreen.style.display = 'none';
-    chatArea.classList.add('active');
-    messagesDiv.innerHTML = '';
-    messagesDiv.appendChild(typingEl);
-    inputEl.placeholder = placeholderByLang[currentLang] || 'Type a question...';
-    quickAlreadyCollapsed = false;
-    quickRow.classList.remove('compact');
-    buildQuickButtons();
-    addMessage(welcomeByLang[currentLang] || welcomeByLang['en'], 'bot');
-  }
-
-  function buildQuickButtons() {
-    quickRow.innerHTML = '';
-    var data = quickByLang[currentLang] || quickByLang['en'];
-    quickLabel.textContent = data.label;
-    data.buttons.forEach(function(item) {
-      var btn = document.createElement('button');
-      btn.className = 'quick-btn' + (item.primary ? ' primary' : '');
-      btn.textContent = item.text;
-      btn.addEventListener('click', function() {
-        if (item.isMenu) {
-          addMessage(menuFeedbackByLang[currentLang] || menuFeedbackByLang['it'], 'bot');
-          window.open(MENU_URL, '_blank');
-          collapseQuickIfNeeded();
-        } else {
-          sendMessage(item.text);
-        }
-      });
-      quickRow.appendChild(btn);
-    });
-  }
-
-  // ── SEND MESSAGE ───────────────────────────────────────────────────────
-  function sendMessage(customText) {
-    var text = (customText !== undefined) ? customText : inputEl.value.trim();
-    if (!text || sendBtn.disabled) return;
-
-    if (containsKeyword(text, menuKeywords)) {
-      addMessage(text, 'user');
-      inputEl.value = '';
-      addMessage(menuFeedbackByLang[currentLang] || menuFeedbackByLang['it'], 'bot');
-      window.open(MENU_URL, '_blank');
-      collapseQuickIfNeeded();
-      return;
-    }
-
-    collapseQuickIfNeeded();
-    addMessage(text, 'user');
-    inputEl.value = '';
-    inputEl.blur();
-
-    if (containsKeyword(text, priceKeywords)) addPriceDisclaimer();
-
-    setLoading(true);
-
-    var botDiv = document.createElement('div');
-    botDiv.className = 'message bot';
-    botDiv.style.display = 'none';
-    messagesDiv.insertBefore(botDiv, typingEl);
-
-    fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Api-Key': API_KEY },
-      body: JSON.stringify({
-        message: text,
-        lang: currentLang,
-        history: conversationHistory.slice(-MAX_HISTORY)
-      })
-    })
-    .then(function(res) {
-      if (!res.ok) {
-        return res.text().then(function() {
-          var errors = errorByLang[currentLang] || errorByLang['it'];
-          botDiv.style.display = '';
-          botDiv.innerHTML = formatText(errors.server.replace('{code}', res.status));
-          setLoading(false);
-        });
-      }
-
-      var reader      = res.body.getReader();
-      var decoder     = new TextDecoder();
-      var accumulated = '';
-      var firstChunk  = true;
-      var rafPending  = false;
-
-      function read() {
-        return reader.read().then(function(result) {
-          if (result.done) {
-            var finalText = parseReply(accumulated) || accumulated;
-            conversationHistory.push({ role: 'user',      content: text      });
-            conversationHistory.push({ role: 'assistant', content: finalText });
-            botDiv.style.display = '';
-            botDiv.innerHTML = formatText(finalText);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            setLoading(false);
-            return;
-          }
-          accumulated += decoder.decode(result.value, { stream: true });
-          if (!rafPending) {
-            rafPending = true;
-            requestAnimationFrame(function() {
-              rafPending = false;
-              var trimmed = accumulated.trimStart();
-              var display = (trimmed[0] === '{' || trimmed[0] === '[')
-                ? (parseReply(accumulated) || accumulated)
-                : accumulated;
-              if (firstChunk && display.length > 0) {
-                firstChunk = false;
-                botDiv.style.display = '';
-                typingEl.classList.remove('visible');
-              }
-              botDiv.innerHTML = formatText(display);
-              messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            });
-          }
-          return read();
-        });
-      }
-      return read();
-    })
-    .catch(function() {
-      var errors = errorByLang[currentLang] || errorByLang['it'];
-      botDiv.style.display = '';
-      botDiv.innerHTML = formatText(errors.network);
-      setLoading(false);
-    });
-  }
-
-  // ── EVENTI ─────────────────────────────────────────────────────────────
-  sendBtn.addEventListener('click', function() { sendMessage(); });
-  inputEl.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  document.querySelectorAll('.lo').forEach(function(btn) {
+    btn.addEventListener('click', function() { pickLang(btn.dataset.code, btn.dataset.label); });
   });
+  g('btn-other-ok').addEventListener('click', confirmOther);
+  g('inp-other').addEventListener('keydown', function(e){ if(e.key==='Enter') confirmOther(); });
+
+  function pickLang(code, label) {
+    lang = code;
+    menuLang = (code === 'it') ? 'it' : 'en';
+    g('lang-btn').textContent = '🌍 ' + label;
+    startChat();
+  }
+  function confirmOther() {
+    var v = g('inp-other').value.trim();
+    g('lang-err').textContent = '';
+    if(!v || v.length < 2){ g('lang-err').textContent = '⚠️ Almeno 2 caratteri'; return; }
+    lang = v.toLowerCase();
+    menuLang = 'en';
+    g('lang-btn').textContent = '🌍 ' + v.charAt(0).toUpperCase() + v.slice(1);
+    startChat();
+  }
+
+  g('lang-btn').addEventListener('click', function() {
+    if(hist.length > 0 && !confirm(t('reset'))) return;
+    hist = []; priceShown = false; menuDone = false;
+    g('inp-other').value = ''; g('lang-err').textContent = '';
+    showOverlay('s-lang');
+  });
+
+  function startChat() {
+    hist = []; priceShown = false; menuDone = false;
+    g('tl-chat').textContent = t('chat');
+    g('tl-menu').textContent = t('menu');
+    g('chips-lbl').textContent = t('label');
+    g('msg-in').placeholder = t('ph');
+    g('msgs').innerHTML = '<div id="ty"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
+    buildChips();
+    hideOverlays();
+    showScreen('s-chat');
+    g('tb-chat').classList.add('on');
+    g('tb-menu').classList.remove('on');
+    addBot(t('welcome'));
+  }
+
+  function buildChips() {
+    var c = g('chips'); c.innerHTML = '';
+    t('chips').forEach(function(txt) {
+      var b = document.createElement('button');
+      b.className = 'chip'; b.textContent = txt;
+      b.addEventListener('click', function(){ collapseChips(); send(txt); });
+      c.appendChild(b);
+    });
+    var w = g('chips-wrap'); w.classList.remove('hidden'); w.classList.remove('cmp');
+    g('chips-btn').classList.remove('active');
+  }
+
+  function collapseChips() {
+    var w = g('chips-wrap');
+    w.classList.remove('hidden');
+    w.classList.add('cmp');
+    g('chips-btn').classList.remove('active');
+  }
+
+  function fmt(s) {
+    return s
+      .replace(/[*][*]([\s\S]*?)[*][*]/g, '<b>$1</b>')
+      .replace(/[*]([\s\S]*?)[*]/g, '<i>$1</i>')
+      .replace(/\n/g, '<br>')
+      .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank">$1</a>');
+  }
+  function parseReply(raw) {
+    var s = raw.trim(); if(!s) return '';
+    if(s.charAt(0) !== '{' && s.charAt(0) !== '[') return s;
+    try {
+      var j = JSON.parse(s);
+      if(Array.isArray(j) && j[0]) return j[0].output || j[0].message || j[0].text || j[0].reply || s;
+      return j.output || j.message || j.text || j.reply || s;
+    } catch(e){ return s; }
+  }
+
+  function addBot(text) {
+    var msgs = g('msgs'), ty = g('ty');
+    var d = document.createElement('div'); d.className = 'bubble bot'; d.innerHTML = fmt(text);
+    msgs.insertBefore(d, ty); msgs.scrollTop = msgs.scrollHeight; return d;
+  }
+  function addUser(text) {
+    var msgs = g('msgs'), ty = g('ty');
+    var d = document.createElement('div'); d.className = 'bubble usr'; d.textContent = text;
+    msgs.insertBefore(d, ty); msgs.scrollTop = msgs.scrollHeight;
+  }
+  function addDisc() {
+    if(priceShown) return; priceShown = true;
+    var msgs = g('msgs'), ty = g('ty');
+    var d = document.createElement('div'); d.className = 'disc'; d.textContent = t('disc');
+    msgs.insertBefore(d, ty); msgs.scrollTop = msgs.scrollHeight;
+  }
+  function setLoad(on) {
+    g('btn-send').disabled = on;
+    var ty = g('ty'); if(ty) ty.style.display = on ? 'flex' : 'none';
+    if(on) g('msgs').scrollTop = g('msgs').scrollHeight;
+  }
+
+  async function send(custom) {
+    var inp = g('msg-in');
+    var text = (custom !== undefined) ? custom : inp.value.trim();
+    if(!text || g('btn-send').disabled) return;
+    collapseChips();
+    addUser(text); inp.value = ''; inp.blur();
+    var lo = text.toLowerCase();
+    if(PRICE_KW.some(function(k){ return lo.indexOf(k) >= 0; })) addDisc();
+    setLoad(true);
+    var msgs = g('msgs'), ty = g('ty');
+    var bd = document.createElement('div'); bd.className = 'bubble bot'; bd.style.display = 'none';
+    msgs.insertBefore(bd, ty);
+    try {
+      var res = await fetch(HOOK, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Api-Key':APIKEY},
+        body: JSON.stringify({message:text, lang:lang, history:hist.slice(-6)})
+      });
+      if(!res.ok){
+        bd.style.display = ''; bd.innerHTML = fmt(t('errsrv').replace('{c}', res.status));
+        setLoad(false); return;
+      }
+      var reader = res.body.getReader(), dec = new TextDecoder();
+      var acc = '', first = true, raf = false;
+      async function read() {
+        var r = await reader.read();
+        if(r.done){
+          var fin = parseReply(acc) || acc;
+          hist.push({role:'user',content:text},{role:'assistant',content:fin});
+          bd.style.display = ''; bd.innerHTML = fmt(fin);
+          msgs.scrollTop = msgs.scrollHeight; setLoad(false); return;
+        }
+        acc += dec.decode(r.value, {stream:true});
+        if(!raf){ raf=true; requestAnimationFrame(function(){
+          raf=false;
+          var tr = acc.trimStart();
+          var disp = (tr.charAt(0)==='{' || tr.charAt(0)==='[') ? (parseReply(acc)||acc) : acc;
+          if(first && disp.length>0){ first=false; bd.style.display=''; if(ty) ty.style.display='none'; }
+          bd.innerHTML = fmt(disp); msgs.scrollTop = msgs.scrollHeight;
+        }); }
+        return read();
+      }
+      await read();
+    } catch(e){
+      bd.style.display = ''; bd.innerHTML = fmt(t('err')); setLoad(false);
+    }
+  }
+
+  g('msg-in').addEventListener('keydown', function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+  });
+  g('btn-send').addEventListener('click', function(){ send(); });
+
+  g('tb-chat').addEventListener('click', function(){
+    document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+    g('tb-chat').classList.add('on'); showScreen('s-chat');
+  });
+  g('tb-menu').addEventListener('click', function(){
+    document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+    g('tb-menu').classList.add('on'); showScreen('s-menu'); renderMenu();
+  });
+
+  g('menu-lang-toggle').addEventListener('click', function() {
+    menuLang = (menuLang === 'it') ? 'en' : 'it';
+    this.textContent = (menuLang === 'it') ? 'EN' : 'IT';
+    menuDone = false; g('mb').innerHTML = ''; renderMenu();
+  });
+
+  function renderMenu() {
+    if(menuDone) return; menuDone = true;
+    var MENU = (menuLang === 'it') ? MENU_IT : MENU_EN;
+    var lx   = LNG[lang] || LNG['it'];
+    var body = g('mb'); body.innerHTML = '';
+    var note = document.createElement('div'); note.className = 'anote';
+    note.innerHTML =
+      '<strong>' + lx.allergen_title + '</strong>' +
+      lx.allergen_body + '<br>' +
+      '<span style="font-size:11px;font-style:italic">' + lx.allergen_note + '</span>';
+    body.appendChild(note);
+    Object.keys(MENU).forEach(function(cat) {
+      var items = MENU[cat];
+      var m = cat.match(/^(\S+)\s+(.+)$/);
+      var em = m ? m[1] : ''; var title = m ? m[2] : cat;
+      var block = document.createElement('div'); block.className = 'cbl';
+      var hdr = document.createElement('div'); hdr.className = 'chdr';
+      hdr.innerHTML =
+        '<div class="chdrl"><span class="cem">' + em + '</span>' +
+        '<div><div class="ctit">' + title + '</div>' +
+        '<div class="ccnt">' + items.length + ' ' + lx.dishes + '</div></div></div>' +
+        '<span class="carr">&#9660;</span>';
+      var bdy = document.createElement('div'); bdy.className = 'cbdy';
+      items.forEach(function(d) {
+        var row = document.createElement('div'); row.className = 'dish';
+        row.innerHTML =
+          '<div class="dsl"><div class="dsn">' + d.n + '</div>' +
+          '<div class="dsd">' + d.d + '</div>' +
+          (d.a ? '<div class="dsa">&#9888;&#65039; ' + d.a + '</div>' : '') +
+          '</div><div class="dsp">' + d.p + '</div>';
+        bdy.appendChild(row);
+      });
+      hdr.addEventListener('click', function(){ bdy.classList.toggle('open'); hdr.classList.toggle('open'); });
+      block.appendChild(hdr); block.appendChild(bdy); body.appendChild(block);
+    });
+  }
+
+  g('chips-btn').addEventListener('click', function() {
+    var wrap = g('chips-wrap');
+    var isCompact = wrap.classList.contains('cmp');
+    if(isCompact){
+      // expand back to full (remove cmp)
+      wrap.classList.remove('cmp');
+      wrap.classList.remove('hidden');
+      g('chips-btn').classList.add('active');
+    } else {
+      wrap.classList.add('cmp');
+      g('chips-btn').classList.remove('active');
+    }
+  });
+
+  g('msg-in').addEventListener('focus', function(){
+    collapseChips();
+  });
+
+  showOverlay('s-priv');
+});
 </script>
 </body>
 </html>
-
