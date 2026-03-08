@@ -834,10 +834,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var lx   = LNG[lang] || LNG['it'];
     var body = g('mb'); body.innerHTML = '';
     var note = document.createElement('div'); note.className = 'anote';
+    var langNote = (menuLang !== 'it')
+      ? '<br><span style="font-size:10.5px;color:#888;font-style:italic">' +
+        'Dish names are displayed in their original Italian, as used in the restaurant.' +
+        '</span>'
+      : '';
     note.innerHTML =
       '<strong>' + lx.allergen_title + '</strong>' +
       lx.allergen_body + '<br>' +
-      '<span style="font-size:11px;font-style:italic">' + lx.allergen_note + '</span>';
+      '<span style="font-size:11px;font-style:italic">' + lx.allergen_note + '</span>' +
+      langNote;
     body.appendChild(note);
     Object.keys(MENU).forEach(function(cat) {
       var items = MENU[cat];
@@ -888,3 +894,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 </body>
 </html>
+
