@@ -297,6 +297,29 @@ body {
 .chip:hover { border-color:var(--r); color:var(--r); background:#FFF8F8; transform:translateY(-1px); }
 .chip:active { transform:scale(.97); }
 
+/* ALLERGEN BADGE BAR */
+#allergy-bar {
+  flex-shrink:0; display:none; align-items:center; gap:6px; flex-wrap:wrap;
+  padding:6px 14px 2px; background:var(--s1);
+}
+#allergy-bar.visible { display:flex; }
+#allergy-bar-lbl { font-size:10px; color:var(--t3); font-weight:600; text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
+.allergy-pill {
+  display:inline-flex; align-items:center; gap:4px; padding:3px 10px 3px 8px;
+  background:#FFF0F0; border:1px solid rgba(180,40,40,.25); border-radius:99px;
+  font-size:11px; color:#8B1A1A; font-weight:600; font-family:'Outfit',sans-serif;
+}
+.allergy-pill button {
+  background:none; border:none; padding:0 0 0 2px; cursor:pointer;
+  color:#8B1A1A; font-size:14px; line-height:1; opacity:.7;
+}
+.allergy-pill button:hover { opacity:1; }
+#allergy-clear-all {
+  font-size:10.5px; color:var(--t3); background:none; border:none;
+  cursor:pointer; font-family:'Outfit',sans-serif; text-decoration:underline;
+  padding:0; margin-left:2px;
+}
+
 /* INPUT BAR */
 #ibar {
   flex-shrink:0; display:flex; gap:9px; align-items:center;
@@ -491,6 +514,11 @@ body {
         <span id="chips-lbl">Chiedimi subito</span>
         <div id="chips"></div>
       </div>
+      <div id="allergy-bar">
+        <span id="allergy-bar-lbl">🚫</span>
+        <div id="allergy-pills"></div>
+        <button id="allergy-clear-all">✕ clear</button>
+      </div>
       <div id="ibar">
         <button id="chips-btn" title="Suggerimenti">💡</button>
         <button id="restart-btn" title="Ricomincia chat">🔄</button>
@@ -544,6 +572,67 @@ body {
   "chips":["💡 O que recomenda?","⚠️ Tenho uma alergia","🍳 Pequeno-almoço","🥗 Entradas","🍝 Massa","🍕 Pizza","🥩 Pratos principais","🐟 Peixe","🍰 Sobremesas","🥤 Bebidas","🥗 Saladas","🌿 Vegetariano"]
 }}</script>
 <script>
+// ══════════════════════════════════════════
+// ALLERGEN SESSION MEMORY — scope globale
+// ══════════════════════════════════════════
+var ALLERGY_MAP_CLIENT = [
+  ['celiaco','A'],['celiaca','A'],['celiachia','A'],['glutine','A'],['senza glutine','A'],
+  ['gluten','A'],['gluten free','A'],['gluten-free','A'],['celiac','A'],['coeliac','A'],
+  ['crostacei','B'],['gamberi','B'],['gamberetto','B'],['shellfish','B'],['crustacean','B'],
+  ['uova','C'],['uovo','C'],['eggs','C'],['egg','C'],['oeufs','C'],['huevo','C'],
+  ['pesce','D'],['salmone','D'],['tonno','D'],['fish','D'],['poisson','D'],['pescado','D'],
+  ['arachidi','E'],['arachide','E'],['noccioline','E'],['peanut','E'],['peanuts','E'],
+  ['soia','F'],['soy','F'],['soja','F'],['tofu','F'],
+  ['latte','G'],['lattosio','G'],['dairy','G'],['milk','G'],['lactose','G'],
+  ['dairy free','G'],['dairy-free','G'],['lactose free','G'],['lactose-free','G'],
+  ['frutta secca','H'],['frutta a guscio','H'],['noci','H'],['nocciola','H'],
+  ['mandorle','H'],['pistacchio','H'],['nuts','H'],['nut','H'],
+  ['sedano','I'],['celery','I'],['aipo','I'],
+  ['senape','J'],['mustard','J'],['mostaza','J'],
+  ['sesamo','K'],['sesame','K'],
+  ['solfiti','L'],['sulphites','L'],['sulfites','L'],
+  ['lupini','M'],['lupins','M'],
+  ['molluschi','N'],['cozze','N'],['vongole','N'],['molluscs','N']
+];
+var ALLERGY_CODE_NAMES = {
+  A:'Glutine',B:'Crostacei',C:'Uova',D:'Pesce',E:'Arachidi',
+  F:'Soia',G:'Latte/Lattosio',H:'Frutta a guscio',I:'Sedano',
+  J:'Senape',K:'Sesamo',L:'Solfiti',M:'Lupini',N:'Molluschi'
+};
+var sessionAllergies = [];
+
+function detectAllergensClient(text) {
+  var t = (text || '').toLowerCase();
+  var found = [];
+  for (var i = 0; i < ALLERGY_MAP_CLIENT.length; i++) {
+    var kw = ALLERGY_MAP_CLIENT[i][0], code = ALLERGY_MAP_CLIENT[i][1];
+    if (t.indexOf(kw) !== -1 && found.indexOf(code) === -1) found.push(code);
+  }
+  return found;
+}
+
+function updateAllergyBar() {
+  var bar = document.getElementById('allergy-bar');
+  var pills = document.getElementById('allergy-pills');
+  if (!bar || !pills) return;
+  pills.innerHTML = '';
+  if (sessionAllergies.length === 0) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+  for (var i = 0; i < sessionAllergies.length; i++) {
+    (function(code) {
+      var pill = document.createElement('span');
+      pill.className = 'allergy-pill';
+      pill.innerHTML = ALLERGY_CODE_NAMES[code] +
+        ' <button title="Rimuovi">&#x2715;</button>';
+      pill.querySelector('button').addEventListener('click', function() {
+        sessionAllergies = sessionAllergies.filter(function(x){ return x !== code; });
+        updateAllergyBar();
+      });
+      pills.appendChild(pill);
+    })(sessionAllergies[i]);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
   var MENU_IT = JSON.parse(document.getElementById('d-menu-it').textContent);
@@ -612,6 +701,9 @@ document.addEventListener('DOMContentLoaded', function () {
     g('msg-in').placeholder = t('ph');
     g('msgs').innerHTML = '<div id="ty"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
     buildChips();
+    g('menu-lang-toggle').textContent = t('menu_lang_btn');
+    var clearBtn = g('allergy-clear-all');
+    if (clearBtn) { clearBtn.onclick = function() { sessionAllergies = []; updateAllergyBar(); }; }
     hideOverlays();
     showScreen('s-chat');
     g('tb-chat').classList.add('on');
@@ -638,6 +730,7 @@ document.addEventListener('DOMContentLoaded', function () {
     g('chips-btn').classList.remove('active');
   }
 
+  function titleCaseAllCaps(s){var ph=[];s=s.replace(/\[([A-Z,\s]{1,30})\]/g,function(m){ph.push(m);return'\u0000'+(ph.length-1)+'\u0000';});s=s.replace(/\b([A-Z\u00C0-\u00D6\u00D8-\u00DE]{2,})\b/g,function(w){return w.charAt(0)+w.slice(1).toLowerCase();});s=s.replace(/\u0000(\d+)\u0000/g,function(m,i){return ph[parseInt(i)];});return s;}
   function fmt(s) {
     return s
       .replace(/[*][*]([\s\S]*?)[*][*]/g, '<b>$1</b>')
@@ -685,6 +778,8 @@ document.addEventListener('DOMContentLoaded', function () {
     addUser(text); inp.value = ''; inp.blur();
     var lo = text.toLowerCase();
     if(PRICE_KW.some(function(k){ return lo.indexOf(k) >= 0; })) addDisc();
+    var newCodes = detectAllergensClient(text);
+    newCodes.forEach(function(c){ if(sessionAllergies.indexOf(c)===-1){ sessionAllergies.push(c); updateAllergyBar(); } });
     setLoad(true);
     var msgs = g('msgs'), ty = g('ty');
     var bd = document.createElement('div'); bd.className = 'bubble bot'; bd.style.display = 'none';
@@ -693,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var res = await fetch(HOOK, {
         method:'POST',
         headers:{'Content-Type':'application/json','X-Api-Key':APIKEY},
-        body: JSON.stringify({message:text, lang:lang, history:hist.slice(-6)})
+        body: JSON.stringify({message:text, lang:lang, history:hist.slice(-10), sessionAllergies:sessionAllergies})
       });
       if(!res.ok){
         bd.style.display = ''; bd.innerHTML = fmt(t('errsrv').replace('{c}', res.status));
@@ -705,8 +800,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var r = await reader.read();
         if(r.done){
           var fin = parseReply(acc) || acc;
-          hist.push({role:'user',content:text},{role:'assistant',content:fin});
-          bd.style.display = ''; bd.innerHTML = fmt(fin);
+          var safeRx=[[/[Nn]on (?:contiene|figura)[^\u2014\n]*\u2014\s*(?:è|e') sicuro[^.\n]*\.?/g,'Non figura nell\'elenco ingredienti \u2014 verifica col personale.'],[/is safe for you[^.\n]*\.?/gi,'is not listed as an ingredient \u2014 confirm with staff.'],[/est s[u\xfb]r pour vous[^.\n]*\.?/gi,'n\'est pas list\xe9 \u2014 confirmez avec le personnel.']];
+    safeRx.forEach(function(p){fin=fin.replace(p[0],p[1]);});
+    hist.push({role:'user',content:text},{role:'assistant',content:fin});
+          bd.style.display = ''; bd.innerHTML = fmt(titleCaseAllCaps(fin));
           msgs.scrollTop = msgs.scrollHeight; setLoad(false); return;
         }
         acc += dec.decode(r.value, {stream:true});
@@ -715,7 +812,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var tr = acc.trimStart();
           var disp = (tr.charAt(0)==='{' || tr.charAt(0)==='[') ? (parseReply(acc)||acc) : acc;
           if(first && disp.length>0){ first=false; bd.style.display=''; if(ty) ty.style.display='none'; }
-          bd.innerHTML = fmt(disp); msgs.scrollTop = msgs.scrollHeight;
+          bd.innerHTML = fmt(titleCaseAllCaps(disp)); msgs.scrollTop = msgs.scrollHeight;
         }); }
         return read();
       }
@@ -801,6 +898,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   g('restart-btn').addEventListener('click', function() {
+    var cMsg={it:'Sei sicuro di voler cancellare la conversazione?',en:'Reset conversation?',fr:'Réinitialiser la conversation ?',es:'¿Reiniciar?',de:'Gespräch zurücksetzen?',zh:'确定重置对话？',ja:'会話をリセット？',pt:'Reiniciar conversa?'};
+    if(!confirm(cMsg[lang]||cMsg.it)) return;
+    sessionAllergies = []; updateAllergyBar();
     hist = [];
     priceShown = false;
     menuDone = false;
